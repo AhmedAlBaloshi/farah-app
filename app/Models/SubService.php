@@ -19,7 +19,7 @@ class SubService extends Model
         'service_list_id'
     ];
 
-    public function service()
+    public function serviceList()
     {
         return $this->hasOne("App\Models\ServiceList", "service_list_id", "service_list_id");
     }

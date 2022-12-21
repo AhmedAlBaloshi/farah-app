@@ -13,9 +13,15 @@ class ServiceListController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $serviceList = ServiceList::with('service')->latest()->paginate(10);
+        $query = ServiceList::with('service');
+        
+        if($request->service_id){
+            $query->where('service_id', $request->service_id);
+        }
+        $serviceList = $query->latest()->paginate(10);
+
         if ($serviceList) {
             return response()->json([
                 'success' => 1,
@@ -27,6 +33,7 @@ class ServiceListController extends BaseController
             'message' => 'Failed to load service list from database'
         ], 404);
     }
+
 
     /**
      * Show the form for creating a new resource.

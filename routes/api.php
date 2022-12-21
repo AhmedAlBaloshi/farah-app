@@ -56,6 +56,12 @@ Route::group(['middleware' => 'auth:api'], function () {
     // ORDER API
     Route::resource('orders', 'Api\OrderController');
     Route::post('orders/{id}/payment', 'Api\OrderController@payment');
+    
+    //USERS
+    Route::get('get-customers', 'Api\UserController@getCustomers');
+    Route::get('get-sellers', 'Api\UserController@getSellers');
+    Route::get('get-staffs', 'Api\UserController@getStaffs');
+
 });
 Route::get('/user', function (Request $request) {
     return $request->user();

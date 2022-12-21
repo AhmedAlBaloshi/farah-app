@@ -20,90 +20,47 @@ use Illuminate\Validation\Rule;
 
 class UserController extends BaseController
 {
-    public function signup(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'firstname' => 'required',
-            'lastname'  => 'required',
-            'email'      => 'string|email|unique:users|max:100',
-            'mobile_no' => [
-                'required'
-            ],
-            'password'   => 'required'
-        ]);
-
-        if ($validator->fails()) {
-            return $this->send_error($validator->errors()->first());
+   
+    public function getCustomers(){
+        $customers = User::where('role_id', 3)->get();
+        if ($customers) {
+            return response()->json([
+                'success' => 1,
+                'customers' => $customers
+            ], 200);
         }
-        // return response()->json([
-        //     'email' => $request->email,
-        // 	'firstname'  => $request->firstname,
-        // 	'lastname'   => $request->lastname,
-        // 	'email'      => $request->email,
-        // 	'mobile_no'  => $request->mobile_no,
-        // 	'password'  => bcrypt($request->password),
-        // ]);
-        $user = new User();
-        $user->email = $request->email;
-        $user->firstname = $request->firstname;
-        $user->lastname  = $request->lastname;
-        $user->email     = $request->email;
-        $user->mobile_no = $request->mobile_no;
-        $user->password = bcrypt($request->password);
-        $user->save();
-
-        //$user   = Auth::loginUsingId($user->id);
-
-        // $msg91Response = $MSG91->sendSMS($otp,$request->mobile_no);
-        return $this->send_response($user, 'Signup successfully');
+        return response()->json([
+            'success' => 0,
+            'message' => 'Failed to load customers from database'
+        ], 404);
     }
 
-    /** 
-     * User Login API 
-     * Auther : Kishan Busa 
-     * @return \Illuminate\Http\Response 
-     */
-    public function login(Request $request)
-    {
-
-        $params = $request->all();
-
-        $customMessages = [
-            "email.required"      => "Email is required",
-            "password.required"   => "Password is required",
-        ];
-
-        $validator = Validator::make($params, [
-            'email'         => 'required',
-            'password'      => 'required',
-        ], $customMessages);
-
-        if ($validator->fails()) {
-
-            return $this->send_error($validator->errors()->first());
+    public function getSellers(){
+        $sellers = User::where('role_id', 4)->get();
+        if ($sellers) {
+            return response()->json([
+                'success' => 1,
+                'sellers' => $sellers
+            ], 200);
         }
-
-        if (Auth::attempt($request->only('email', 'password'))) {
-            //send them where they are going 
-            $user  = Auth::user();
-
-            unset($user->created_at);
-            unset($user->updated_at);
-
-
-            $user->email = !empty($user->email) ? $user->email : '';
-            //$user->profile_image = !empty($user->profile_image) ? $user->profile_image : '';
-
-            return $this->send_response($user, 'User login successfully.');
-        } else {
-
-            return $this->send_error('These credentials do not match our records.');
-        }
+        return response()->json([
+            'success' => 0,
+            'message' => 'Failed to load sellers from database'
+        ], 404);
     }
-
-    public function userProfile()
-    {
-        return response()->json(auth()->user());
+    
+    public function getStaffs(){
+        $staffs = User::where('role_id', 2)->get();
+        if ($staffs) {
+            return response()->json([
+                'success' => 1,
+                'staffs' => $staffs
+            ], 200);
+        }
+        return response()->json([
+            'success' => 0,
+            'message' => 'Failed to load staffs from database'
+        ], 404);
     }
 
     /**

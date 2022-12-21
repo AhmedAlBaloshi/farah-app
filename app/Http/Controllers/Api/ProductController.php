@@ -13,9 +13,19 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('service','serviceList','subServiceList')->latest()->paginate(10);
+        $query = Product::with('service', 'serviceList', 'subServiceList');
+        if ($request->service_id) {
+            $query->where('service_id', $request->service_id);
+        }
+        if ($request->service_list_id) {
+            $query->where('service_list_id', $request->service_list_id);
+        }
+        if ($request->sub_service_id) {
+            $query->where('sub_service_id', $request->sub_service_id);
+        }
+        $products = $query->latest()->paginate(10);
         if ($products) {
             return response()->json([
                 'success' => 1,
@@ -46,7 +56,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,[
+        $this->validate($request, [
             'product_name'      => 'required',
             'product_name_ar'   => 'required',
             'address'           => 'required',
@@ -60,7 +70,7 @@ class ProductController extends Controller
             'service_list_id'   => 'required',
             'items.*.date'      => 'required',
             'items.*.time'      => 'required'
-        ],[
+        ], [
             'items.*.date.required' => 'date field is required',
             'items.*.time.required' => 'time field is required'
         ]);
@@ -121,7 +131,7 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request,[
+        $this->validate($request, [
             'product_name'      => 'required',
             'product_name_ar'   => 'required',
             'address'           => 'required',
@@ -135,19 +145,19 @@ class ProductController extends Controller
             'service_id'        => 'required'
         ]);
 
-       $product = Product::updateRecords($id,$request->all());
-      
-       if (!$product) {
+        $product = Product::updateRecords($id, $request->all());
+
+        if (!$product) {
+            return response()->json([
+                'success' => 0,
+                'message' => 'Failed, Product not found'
+            ], 404);
+        }
         return response()->json([
-            'success' => 0,
-            'message' => 'Failed, Product not found'
-        ], 404);
-    }
-    return response()->json([
-        'success' => 1,
-        'message' => 'Product updated successfully',
-        "product_id" => $product->product_id
-    ], 200);
+            'success' => 1,
+            'message' => 'Product updated successfully',
+            "product_id" => $product->product_id
+        ], 200);
     }
 
     /**
@@ -159,7 +169,7 @@ class ProductController extends Controller
     public function destroy($id)
     {
         if ((int)$id > 0) {
-            $product = Product::where('product_id',$id)->delete();
+            $product = Product::where('product_id', $id)->delete();
 
             return response()->json([
                 'success' => 1,

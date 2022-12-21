@@ -13,9 +13,16 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $category = Category::with('service', 'category')->latest()->paginate(10);
+        $query = Category::with('service', 'category');
+        if($request->service_id){
+            $query->where('service_id', $request->service_id);
+        }
+        if($request->parent_category){
+            $query->where('parent_category', $request->parent_category);
+        }
+        $category = $query->latest()->paginate(10);
         if ($category) {
             return response()->json([
                 'success' => 1,

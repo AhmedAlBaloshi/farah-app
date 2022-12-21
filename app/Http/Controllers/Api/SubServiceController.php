@@ -13,9 +13,13 @@ class SubServiceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $sub_services = SubService::with('service')->latest()->paginate(10);
+        $query = SubService::with('serviceList');
+        if($request->service_list_id){
+            $query->where('service_list_id', $request->service_list_id);
+        }
+        $sub_services = $query->latest()->paginate(10);
 
         if ($sub_services) {
             return response()->json([
