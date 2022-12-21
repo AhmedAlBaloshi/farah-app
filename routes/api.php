@@ -15,33 +15,48 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Auth
-Route::post('login', "Api\UserController@login");
-Route::post('signup', "Api\UserController@signup");
-Route::get('user-profile', "Api\UserController@userProfile");
+Route::group([
 
-// SERVICE API
-Route::get('services', "Api\ServiceController@index");
-Route::post('services', "Api\ServiceController@store");
-Route::get('services/{id}', "Api\ServiceController@show");
-Route::post('services/{id}', "Api\ServiceController@update");
-Route::delete('services/{id}', "Api\ServiceController@destroy");
-Route::get('get-services', "Api\ServiceController@getServices");
+    'middleware' => 'api',
+    'prefix' => 'auth'
 
-// SERVICE LIST API
-Route::resource('service-list', "Api\ServiceListController");
-Route::get('get-service-list', "Api\ServiceListController@getServiceList");
+], function ($router) {
 
-// PRODUCT API
-Route::resource('product', "Api\ProductController");
+    Route::post('login', "AuthController@login");
+    Route::post('signup', "AuthController@signup");
+    Route::get('user-profile', "AuthController@userProfile");
+    Route::post('logout', 'AuthController@logout');
+    Route::post('refresh', 'AuthController@refresh');
+});
 
-// CATEGORY LIST API
-Route::resource('category', "Api\CategoryController");
-Route::get('get-category-list', "Api\CategoryController@getServiceList");
+Route::group(['middleware' => 'auth:api'], function () {
+    // SERVICE API
+    Route::get('services', "Api\ServiceController@index");
+    Route::post('services', "Api\ServiceController@store");
+    Route::get('services/{id}', "Api\ServiceController@show");
+    Route::post('services/{id}', "Api\ServiceController@update");
+    Route::delete('services/{id}', "Api\ServiceController@destroy");
+    Route::get('get-services', "Api\ServiceController@getServices");
 
-// SUB SERVICE LIST API
-Route::resource('sub-service-list', "Api\SubServiceController");
-Route::get('get-sub-service-list', "Api\SubServiceController@getSubService");
+    // SERVICE LIST API
+    Route::resource('service-list', "Api\ServiceListController");
+    Route::get('get-service-list', "Api\ServiceListController@getServiceList");
 
+    // PRODUCT API
+    Route::resource('product', "Api\ProductController");
+
+    // CATEGORY LIST API
+    Route::resource('category', "Api\CategoryController");
+    Route::get('get-category-list', "Api\CategoryController@getServiceList");
+
+    // SUB SERVICE LIST API
+    Route::resource('sub-service-list', "Api\SubServiceController");
+    Route::get('get-sub-service-list', "Api\SubServiceController@getSubService");
+
+    // ORDER API
+    Route::resource('orders', 'Api\OrderController');
+    Route::post('orders/{id}/payment', 'Api\OrderController@payment');
+});
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:api');
