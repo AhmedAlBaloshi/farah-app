@@ -18,9 +18,17 @@ class OrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::latest()->paginate(10);
+        $query = Order::select('orders.*')->latest()
+            ->join('order_product', 'order_product.order_id', '=', 'orders.id');
+
+        if ($request->user_id)
+            $query->where('user_id', $request->user_id);
+        if ($request->customer_id)
+            $query->where('guest_id', $request->customer_id);
+
+        $orders = $query->groupBy('orders.id')->get();
 
         if ($orders) {
             return response()->json([
@@ -33,6 +41,31 @@ class OrderController extends Controller
             'message' => 'Failed to load orders from database'
         ], 404);
     }
+
+    public function bookings(Request $request)
+    {
+        $query = Order::select('orders.*')->latest()
+            ->join('order_book_time_slot', 'order_book_time_slot.order_id', '=', 'orders.id');
+
+        if ($request->user_id)
+            $query->where('user_id', $request->user_id);
+        if ($request->customer_id)
+            $query->where('guest_id', $request->customer_id);
+
+        $orders = $query->groupBy('orders.id')->get();
+
+        if ($orders) {
+            return response()->json([
+                'success' => 1,
+                'bookings' => $orders
+            ], 200);
+        }
+        return response()->json([
+            'success' => 0,
+            'message' => 'Failed to load bookings from database'
+        ], 404);
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -55,17 +88,16 @@ class OrderController extends Controller
         $this->validate($request, [
             'date' => 'required',
             'price' => 'required',
-            'quantity' => 'required',
             'payment_type' => 'required',
         ]);
-
+        DB::beginTransaction();
         $order = new Order();
         $order->user_id = auth()->user()->id;
         $order->guest_id = $request->guest_id;
-        $order->shipping_address = $request->shipping_address;
+        $order->shipping_address = $request->shipping_address ? $request->shipping_address : null;
         $order->payment_type = $request->payment_type;
         $order->manual_payment = $request->manual_payment ? $request->manual_payment : 0;
-        $order->grand_total = $request->price;
+        $order->grand_total = $request->grand_total;
         $order->date = $request->date;
         $order->save();
 
@@ -73,7 +105,11 @@ class OrderController extends Controller
         $detail->order_id = $order->id;
         $detail->product_id = $request->product_id;
         $detail->price = $request->price;
-        $detail->quantity = $request->quantity;
+        $order->tax = $request->taxes;
+
+        if ($request->product_id) {
+            $detail->quantity = $request->quantity;
+        }
         $detail->payment_status = $request->payment_status;
         $detail->booking_date = $request->date;
         $detail->booking_start_time = $request->start_time;
@@ -89,14 +125,17 @@ class OrderController extends Controller
             $orderProduct->timestamps = false;
 
             $orderProduct->save();
-        } else {
+        }
+        if ($request->service_id) {
             $bookTimeSlot = new OrderBookTimeSlot();
             $bookTimeSlot->order_id = $order->id;
-            $bookTimeSlot->book_date = $request->date;
+            $bookTimeSlot->service_id = $request->service_id;
+            $bookTimeSlot->book_date = $request->book_date;
             $bookTimeSlot->book_time = $request->book_time;
             $bookTimeSlot->timestamps = false;
             $bookTimeSlot->save();
         }
+        DB::commit();
         if ($order) {
             return response()->json([
                 'success' => 1,
@@ -125,11 +164,12 @@ class OrderController extends Controller
             ->where('orders.id', $id)
             ->first();
 
-        $orderDetails = Order::select(DB::raw('OD.*,CONCAT(S.firstname, " ",S.lastname) as seller_name, P.product_name as product_name_en, P.product_name_ar as product_name_ar , TS.book_time as book_time, TS.book_date as book_date, OP.quantity as product_qty, OP.amount as product_amount'))
+        $orderDetails = Order::select(DB::raw('OD.*,CONCAT(S.firstname, " ",S.lastname) as seller_name, P.product_name as product_name_en, P.product_name_ar as product_name_ar , TS.book_time as book_time, TS.book_date as book_date, OP.quantity as product_qty, OP.amount as product_amount, service.service_name as service_name'))
             ->join('order_details as OD', 'OD.order_id', '=', 'orders.id')
             ->join('users as U', 'U.id', '=', 'orders.user_id')
             ->leftJoin('product as P', 'P.product_id', '=', 'OD.product_id')
             ->leftJoin('order_book_time_slot as TS', 'TS.order_id', '=', 'orders.id')
+            ->leftJoin('service', 'service.service_id', '=', 'TS.service_id')
             ->leftJoin('order_product as OP', 'OP.order_id', '=', 'orders.id')
             ->leftJoin('users as S', 'S.id', '=', 'OD.seller_id')
             ->where('orders.id', $id)
@@ -155,13 +195,13 @@ class OrderController extends Controller
             'payment_status' => 'required',
         ]);
         $discount = $request->discount ? $request->discount : 0;
-        $taxes = $request->taxes ? $request->taxes : 0;
 
         // update Order payment status
 
         $order = Order::findOrFail($order_id);
         $order->payment_status = $request->payment_status;
         $order->update();
+        $taxes = $order->taxes ? $request->taxes : 0;
 
         //create payment 
         $payment = new Payment();
