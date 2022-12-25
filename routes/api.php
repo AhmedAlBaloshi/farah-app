@@ -59,12 +59,19 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('orders', 'Api\OrderController');
     Route::get('bookings', 'Api\OrderController@bookings');
     Route::post('orders/{id}/payment', 'Api\OrderController@payment');
-    
+
     //USERS
     Route::get('get-customers', 'Api\UserController@getCustomers');
     Route::get('get-sellers', 'Api\UserController@getSellers');
     Route::get('get-staffs', 'Api\UserController@getStaffs');
 
+    // BANNER
+    Route::resource('banners', "Api\BannerController");
+    Route::post('banners/{id}', "Api\BannerController@update");
+
+    // SUB BANNER
+    Route::resource('sub-banners', "Api\BannerController");
+    Route::post('sub-banners/{id}', "Api\BannerController@update");
 });
 Route::get('/user', function (Request $request) {
     return $request->user();
