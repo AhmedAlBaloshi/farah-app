@@ -40,6 +40,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     // SERVICE LIST API
     Route::resource('service-list', "Api\ServiceListController");
+    Route::post('service-list/{id}', "Api\ServiceListController@update");
     Route::get('get-service-list', "Api\ServiceListController@getServiceList");
 
     // PRODUCT API
@@ -47,6 +48,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     // CATEGORY LIST API
     Route::resource('category', "Api\CategoryController");
+    Route::post('category/{id}', "Api\CategoryController@update");
     Route::get('get-category-list', "Api\CategoryController@getServiceList");
 
     // SUB SERVICE LIST API

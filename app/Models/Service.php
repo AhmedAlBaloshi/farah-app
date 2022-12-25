@@ -23,16 +23,16 @@ class Service extends Model
     {
         if (!empty($params)) {
 
-            $image = $params['image'];
-            // if (!empty($params['image'])) {
-            //     $file = $params['image'];
-            //     $fileName = uniqid() . '-' . $file->getClientOriginalName();
+            $image = '';
+            if (!empty($params['image'])) {
+                $file = $params['image'];
+                $fileName = uniqid() . '-' . $file->getClientOriginalName();
 
-            //     //Move Uploaded File
-            //     $destinationPath = 'service-image';
-            //     $file->move($destinationPath, $fileName);
-            //     $image = $fileName;
-            // }
+                //Move Uploaded File
+                $destinationPath = 'service-image';
+                $file->move($destinationPath, $fileName);
+                $image = $fileName;
+            }
 
             return self::create([
                 'service_name'     => $params['service_name'],
@@ -46,16 +46,16 @@ class Service extends Model
     {
         if (!empty($params) && (int)$id > 0) {
 
-            $image = $params['image'];
-            // if (!empty($params['image'])) {
-            //     $file = $params['image'];
-            //     $fileName = uniqid() . '-' . $file->getClientOriginalName();
+            $image ='';
+            if (!empty($params['image'])) {
+                $file = $params['image'];
+                $fileName = uniqid() . '-' . $file->getClientOriginalName();
 
-            //     //Move Uploaded File
-            //     $destinationPath = 'service-image';
-            //     $file->move($destinationPath, $fileName);
-            //     $image = $fileName;
-            // }
+                //Move Uploaded File
+                $destinationPath = 'service-image';
+                $file->move($destinationPath, $fileName);
+                $image = $fileName;
+            }
 
             $service = Service::where('service_id', $id)->first();
             if ($service) {

@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Api\BaseController as BaseController;
 use App\Models\Service;
 
-
 class ServiceController extends BaseController
 {
     public function index(Request $request)
@@ -99,7 +98,7 @@ class ServiceController extends BaseController
         if ((int)$id > 0) {
 
             $service = Service::where('service_id', $id)->delete();
-          
+
             return response()->json([
                 'success' => 1,
                 'message' => 'Service deleted successfully',

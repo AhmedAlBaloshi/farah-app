@@ -30,16 +30,16 @@ class ServiceList extends Model
     {
         if (!empty($params)) {
 
-            $image = $params['image'];
-            // if (!empty($params['image'])) {
-            //     $file = $params['image'];
-            //     $fileName = uniqid().'-'.$file->getClientOriginalName();
+            $image = '';
+            if (!empty($params['image'])) {
+                $file = $params['image'];
+                $fileName = uniqid().'-'.$file->getClientOriginalName();
 
-            //     //Move Uploaded File
-            //     $destinationPath = 'service-list-image';
-            //     $file->move($destinationPath,$fileName);
-            //     $image = $fileName;
-            // }
+                //Move Uploaded File
+                $destinationPath = 'service-list-image';
+                $file->move($destinationPath,$fileName);
+                $image = $fileName;
+            }
 
             return self::create([
                 'service_name'     => $params['service_name'],
@@ -55,14 +55,12 @@ class ServiceList extends Model
         if (!empty($params) && (int)$id > 0) {
             $image = '';
             if (!empty($params['image'])) {
-                $image = $params['image'];
-                //     $file = $params['image'];
-                //     $fileName = uniqid().'-'.$file->getClientOriginalName();
-
-                //     //Move Uploaded File
-                //     $destinationPath = 'service-list-image';
-                //     $file->move($destinationPath,$fileName);
-                //     $image = $fileName;
+                $file = $params['image'];
+                    $fileName = uniqid().'-'.$file->getClientOriginalName();
+                    //Move Uploaded File
+                    $destinationPath = 'service-list-image';
+                    $file->move($destinationPath,$fileName);
+                    $image = $fileName;
             }
 
             $serviceList = ServiceList::where('service_list_id', $id)->first();

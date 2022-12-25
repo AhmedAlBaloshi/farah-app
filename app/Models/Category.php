@@ -36,16 +36,16 @@ class Category extends Model
     {
         if(!empty($params)) {
             
-            $image = $params['image'];
-            // if (!empty($params['image'])) {
-            //     $file = $params['image'];
-            //     $fileName = uniqid().'-'.$file->getClientOriginalName();
+            $image = '';
+            if (!empty($params['image'])) {
+                $file = $params['image'];
+                $fileName = uniqid().'-'.$file->getClientOriginalName();
                 
-            //     //Move Uploaded File
-            //     $destinationPath = 'category-image';
-            //     $file->move($destinationPath,$fileName);
-            //     $image = $fileName;
-            // }
+                //Move Uploaded File
+                $destinationPath = 'category-image';
+                $file->move($destinationPath,$fileName);
+                $image = $fileName;
+            }
 
             return self::create([
                 'category_name'     => $params['category_name'],
@@ -61,16 +61,16 @@ class Category extends Model
     {
         if(!empty($params) && (int)$id > 0) {
             
-            $image =$params['image'];
-            // if (!empty($params['image'])) {
-            //     $file = $params['image'];
-            //     $fileName = uniqid().'-'.$file->getClientOriginalName();
+            $image ='';
+            if (!empty($params['image'])) {
+                $file = $params['image'];
+                $fileName = uniqid().'-'.$file->getClientOriginalName();
                 
-            //     //Move Uploaded File
-            //     $destinationPath = 'category-image';
-            //     $file->move($destinationPath,$fileName);
-            //     $image = $fileName;
-            // }
+                //Move Uploaded File
+                $destinationPath = 'category-image';
+                $file->move($destinationPath,$fileName);
+                $image = $fileName;
+            }
 
             $category = Category::where('category_id',$id)->first();
             if($category) {
