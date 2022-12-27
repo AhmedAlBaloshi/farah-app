@@ -15,7 +15,7 @@ class BannerController extends Controller
      */
     public function index()
     {
-        $banners = Banner::latest()->paginate(10);
+        $banners = Banner::with('product')->latest()->paginate(10);
 
         if ($banners) {
             return response()->json([
@@ -74,7 +74,7 @@ class BannerController extends Controller
      */
     public function show($id)
     {
-        $banner  = Banner::findOrFail($id);
+        $banner  = Banner::with('product')->findOrFail($id);
 
         if ($banner) {
             return response()->json([

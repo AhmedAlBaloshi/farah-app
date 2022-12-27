@@ -8,8 +8,14 @@ class Banner extends Model
 {
     protected $table = 'banner';
     protected $fillable = [
-        'image'
+        'image',
+        'product_id'
     ];
+
+    public function product()
+    {
+        return $this->hasOne("App\Models\Product", "product_id", "product_id");
+    }
 
     public static function add($params = [])
     {
@@ -27,7 +33,8 @@ class Banner extends Model
             }
 
             return self::create([
-                'image'            => $image
+                'image'            => $image,
+                'product_id'       => $params['product_id']
             ]);
         }
     }
@@ -50,6 +57,7 @@ class Banner extends Model
             $banner = Banner::findOrFail($id);
             if ($banner) {
                 $banner->image = $image;
+                $banner->product_id = $params['product_id'];
                 $banner->save();
                 return $banner;
             }

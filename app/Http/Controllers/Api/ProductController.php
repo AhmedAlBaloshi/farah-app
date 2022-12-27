@@ -15,7 +15,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::with('service', 'serviceList', 'subServiceList');
+        $query = Product::with('service', 'serviceList', 'subServiceList', 'banner');
         if ($request->service_id) {
             $query->where('service_id', $request->service_id);
         }
@@ -97,7 +97,7 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $product = Product::with('productAvailability')->where('product_id', $id)->first();
+        $product = Product::with('productAvailability','banner')->where('product_id', $id)->first();
 
         if ($product) {
             return response()->json([

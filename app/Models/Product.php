@@ -34,6 +34,10 @@ class Product extends Model
     {
         return $this->hasOne("App\Models\Service", "service_id", "service_id");
     }
+    public function banner()
+    {
+        return $this->hasOne("App\Models\Banner");
+    }
 
     public function serviceList()
     {

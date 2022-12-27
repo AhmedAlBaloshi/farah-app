@@ -69,6 +69,9 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('banners', "Api\BannerController");
     Route::post('banners/{id}', "Api\BannerController@update");
 
+    // ABOUT
+    Route::resource('about-us', "Api\AboutUsController");
+    
     // SUB BANNER
     Route::resource('sub-banners', "Api\BannerController");
     Route::post('sub-banners/{id}', "Api\BannerController@update");
