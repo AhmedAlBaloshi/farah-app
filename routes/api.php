@@ -71,6 +71,8 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     // ABOUT
     Route::resource('about-us', "Api\AboutUsController");
+    Route::resource('terms-of-service', "Api\TermsServiceController");
+    Route::resource('feedbacks', "Api\FeedbackController");
     
     // SUB BANNER
     Route::resource('sub-banners', "Api\BannerController");

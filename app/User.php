@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\Feedback;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -36,5 +37,9 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function feedback(){
+        return $this->hasMany(Feedback::class);
     }
 }
