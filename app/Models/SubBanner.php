@@ -21,7 +21,7 @@ class SubBanner extends Model
                 $fileName = uniqid() . '-' . $file->getClientOriginalName();
 
                 //Move Uploaded File
-                $destinationPath = 'sub-banner-image';
+                $destinationPath = 'api/sub-banner-image';
                 $file->move($destinationPath, $fileName);
                 $image = $fileName;
             }
@@ -42,7 +42,7 @@ class SubBanner extends Model
                 $fileName = uniqid() . '-' . $file->getClientOriginalName();
 
                 //Move Uploaded File
-                $destinationPath = 'sub-banner-image';
+                $destinationPath = 'api/sub-banner-image';
                 $file->move($destinationPath, $fileName);
                 $image = $fileName;
             }

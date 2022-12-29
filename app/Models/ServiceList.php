@@ -36,7 +36,7 @@ class ServiceList extends Model
                 $fileName = uniqid().'-'.$file->getClientOriginalName();
 
                 //Move Uploaded File
-                $destinationPath = 'service-list-image';
+                $destinationPath = 'api/service-list-image';
                 $file->move($destinationPath,$fileName);
                 $image = $fileName;
             }
@@ -58,7 +58,7 @@ class ServiceList extends Model
                 $file = $params['image'];
                     $fileName = uniqid().'-'.$file->getClientOriginalName();
                     //Move Uploaded File
-                    $destinationPath = 'service-list-image';
+                    $destinationPath = 'api/service-list-image';
                     $file->move($destinationPath,$fileName);
                     $image = $fileName;
             }

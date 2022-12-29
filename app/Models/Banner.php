@@ -27,7 +27,7 @@ class Banner extends Model
                 $fileName = uniqid() . '-' . $file->getClientOriginalName();
 
                 //Move Uploaded File
-                $destinationPath = 'banner-image';
+                $destinationPath = 'api/banner-image';
                 $file->move($destinationPath, $fileName);
                 $image = $fileName;
             }
@@ -49,7 +49,7 @@ class Banner extends Model
                 $fileName = uniqid() . '-' . $file->getClientOriginalName();
 
                 //Move Uploaded File
-                $destinationPath = 'banner-image';
+                $destinationPath = 'api/banner-image';
                 $file->move($destinationPath, $fileName);
                 $image = $fileName;
             }

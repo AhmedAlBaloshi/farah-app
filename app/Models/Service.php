@@ -29,7 +29,7 @@ class Service extends Model
                 $fileName = uniqid() . '-' . $file->getClientOriginalName();
 
                 //Move Uploaded File
-                $destinationPath = 'service-image';
+                $destinationPath = 'api/service-image';
                 $file->move($destinationPath, $fileName);
                 $image = $fileName;
             }
@@ -52,7 +52,7 @@ class Service extends Model
                 $fileName = uniqid() . '-' . $file->getClientOriginalName();
 
                 //Move Uploaded File
-                $destinationPath = 'service-image';
+                $destinationPath = 'api/service-image';
                 $file->move($destinationPath, $fileName);
                 $image = $fileName;
             }

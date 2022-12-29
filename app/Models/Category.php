@@ -42,7 +42,7 @@ class Category extends Model
                 $fileName = uniqid().'-'.$file->getClientOriginalName();
                 
                 //Move Uploaded File
-                $destinationPath = 'category-image';
+                $destinationPath = 'api/category-image';
                 $file->move($destinationPath,$fileName);
                 $image = $fileName;
             }
@@ -67,7 +67,7 @@ class Category extends Model
                 $fileName = uniqid().'-'.$file->getClientOriginalName();
                 
                 //Move Uploaded File
-                $destinationPath = 'category-image';
+                $destinationPath = 'api/category-image';
                 $file->move($destinationPath,$fileName);
                 $image = $fileName;
             }
