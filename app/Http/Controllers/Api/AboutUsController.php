@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\AboutUs;
+use Illuminate\Support\Facades\Validator;
 
 class AboutUsController extends Controller
 {
@@ -81,9 +82,16 @@ class AboutUsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'description' => 'required'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
 
         $about = AboutUs::updateRecords($id, $request->all());
         if (!$about) {

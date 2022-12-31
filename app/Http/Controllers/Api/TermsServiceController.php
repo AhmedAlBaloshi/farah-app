@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\TermsService;
+use Illuminate\Support\Facades\Validator;
 
 class TermsServiceController extends Controller
 {
@@ -15,18 +16,18 @@ class TermsServiceController extends Controller
      */
     public function index()
     {
-        $service =TermsService::first();
+        $service = TermsService::first();
 
         if ($service) {
-         return response()->json([
-             'success' => 1,
-             'terms' => $service
-         ], 200);
-     }
-     return response()->json([
-         'success' => 0,
-         'message' => 'Failed to load terms of service from database'
-     ], 404);
+            return response()->json([
+                'success' => 1,
+                'terms' => $service
+            ], 200);
+        }
+        return response()->json([
+            'success' => 0,
+            'message' => 'Failed to load terms of service from database'
+        ], 404);
     }
 
     /**
@@ -81,9 +82,16 @@ class TermsServiceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'description' => 'required'
         ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
+
 
         $service = TermsService::updateRecords($id, $request->all());
         if (!$service) {
@@ -97,7 +105,6 @@ class TermsServiceController extends Controller
             'message' => 'Terms of services updated successfully',
             "service_id" => $service->id
         ], 200);
-    
     }
 
     /**

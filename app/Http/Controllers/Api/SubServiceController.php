@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\SubService;
+use Illuminate\Support\Facades\Validator;
 
 class SubServiceController extends Controller
 {
@@ -16,7 +17,7 @@ class SubServiceController extends Controller
     public function index(Request $request)
     {
         $query = SubService::with('serviceList');
-        if($request->service_list_id){
+        if ($request->service_list_id) {
             $query->where('service_list_id', $request->service_list_id);
         }
         $sub_services = $query->latest()->paginate(10);
@@ -51,11 +52,18 @@ class SubServiceController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'sub_service_name'    => 'required',
             'sub_service_name_ar' => 'required',
             'service_list_id'     => 'required'
         ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
+
 
         $sub_services = SubService::add($request->all());
 
@@ -93,7 +101,7 @@ class SubServiceController extends Controller
             'message' => 'Failed, sub Service list not found'
         ], 404);
     }
-    
+
     public function getSubService()
     {
         $service = SubService::pluck('sub_service_name', 'sub_service_id')->toArray();
@@ -124,13 +132,20 @@ class SubServiceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request,[
+        $validator = Validator::make($request->all(), [
             'sub_service_name'       => 'required',
             'sub_service_name_ar'    => 'required',
             'service_list_id'         => 'required'
         ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
 
-        $sub_service = SubService::updateRecords($id,$request->all());
+
+        $sub_service = SubService::updateRecords($id, $request->all());
 
         if (!$sub_service) {
             return response()->json([
@@ -142,7 +157,8 @@ class SubServiceController extends Controller
             'success' => 1,
             'message' => 'Sub service list updated successfully',
             "sub_service_id" => $sub_service->sub_service_id
-        ], 200);    }
+        ], 200);
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -155,7 +171,7 @@ class SubServiceController extends Controller
         if ((int)$id > 0) {
 
             $service = SubService::where('sub_service_id', $id)->delete();
-        
+
             return response()->json([
                 'success' => 1,
                 'message' => 'Sub service list deleted successfully',

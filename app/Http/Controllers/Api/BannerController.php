@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
+use Illuminate\Support\Facades\Validator;
 
 class BannerController extends Controller
 {
@@ -47,9 +48,16 @@ class BannerController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'image' => 'required'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
 
         $banner = Banner::add($request->all());
 
@@ -108,9 +116,16 @@ class BannerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'image' => 'required'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
 
         $banner = Banner::updateRecords($id, $request->all());
         if (!$banner) {

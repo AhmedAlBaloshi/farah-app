@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
@@ -16,10 +17,10 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         $query = Category::with('service', 'category');
-        if($request->service_id){
+        if ($request->service_id) {
             $query->where('service_id', $request->service_id);
         }
-        if($request->parent_category){
+        if ($request->parent_category) {
             $query->where('parent_category', $request->parent_category);
         }
         $category = $query->latest()->paginate(10);
@@ -53,12 +54,19 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'category_name'    => 'required',
             'category_name_ar' => 'required',
             'service_id'       => 'required',
             'image'            => 'required'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
 
         $category = Category::add($request->all());
         if ($category) {
@@ -124,11 +132,18 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'category_name'    => 'required',
             'category_name_ar' => 'required',
             'service_id'       => 'required',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
 
         $category =  Category::updateRecords($id, $request->all());
         if (!$category) {

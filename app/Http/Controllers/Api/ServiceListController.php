@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\BaseController as BaseController;
 use App\Models\ServiceList;
+use Illuminate\Support\Facades\Validator;
 
 class ServiceListController extends BaseController
 {
@@ -16,8 +17,8 @@ class ServiceListController extends BaseController
     public function index(Request $request)
     {
         $query = ServiceList::with('service');
-        
-        if($request->service_id){
+
+        if ($request->service_id) {
             $query->where('service_id', $request->service_id);
         }
         $serviceList = $query->latest()->paginate(10);
@@ -53,12 +54,20 @@ class ServiceListController extends BaseController
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'service_name'       => 'required',
             'service_name_ar'    => 'required',
             'image'              => 'required',
             'service_id'         => 'required'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
+
 
         $serviceList = ServiceList::add($request->all());
         if ($serviceList) {
@@ -115,11 +124,17 @@ class ServiceListController extends BaseController
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'service_name'       => 'required',
             'service_name_ar'    => 'required',
             'service_id'         => 'required'
         ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
 
         $service = ServiceList::updateRecords($id, $request->all());
         if (!$service) {

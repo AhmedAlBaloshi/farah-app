@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Feedback;
+use Illuminate\Support\Facades\Validator;
 
 class FeedbackController extends Controller
 {
@@ -27,7 +28,6 @@ class FeedbackController extends Controller
             'success' => 0,
             'message' => 'Failed to load feedbacks from database'
         ], 404);
-
     }
 
     /**
@@ -48,10 +48,17 @@ class FeedbackController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'description' => 'required',
             'user_id' => 'required'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
 
         $feedback = Feedback::add($request->all());
 

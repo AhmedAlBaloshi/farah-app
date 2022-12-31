@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\SubBanner;
+use Illuminate\Support\Facades\Validator;
 
 class SubBannerController extends Controller
 {
@@ -47,9 +48,16 @@ class SubBannerController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'image' => 'required'
         ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
+
 
         $banner = SubBanner::add($request->all());
 
@@ -108,9 +116,16 @@ class SubBannerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'image' => 'required'
         ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
+
 
         $banner = SubBanner::updateRecords($id, $request->all());
         if (!$banner) {

@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Api\BaseController as BaseController;
 use App\User;
 use Illuminate\Support\Facades\Auth;
-use Validator;
 use APIHelper;
 use App\PasswordReset;
 use App\Notifications\PasswordResetRequest;
@@ -16,12 +15,14 @@ use DB;
 use Storage;
 use Image;
 use File;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class UserController extends BaseController
 {
-   
-    public function getCustomers(){
+
+    public function getCustomers()
+    {
         $customers = User::where('role_id', 3)->get();
         if ($customers) {
             return response()->json([
@@ -35,7 +36,8 @@ class UserController extends BaseController
         ], 404);
     }
 
-    public function getSellers(){
+    public function getSellers()
+    {
         $sellers = User::where('role_id', 4)->get();
         if ($sellers) {
             return response()->json([
@@ -48,8 +50,9 @@ class UserController extends BaseController
             'message' => 'Failed to load sellers from database'
         ], 404);
     }
-    
-    public function getStaffs(){
+
+    public function getStaffs()
+    {
         $staffs = User::where('role_id', 2)->get();
         if ($staffs) {
             return response()->json([
@@ -61,6 +64,72 @@ class UserController extends BaseController
             'success' => 0,
             'message' => 'Failed to load staffs from database'
         ], 404);
+    }
+
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'firstname' => 'required|min:3',
+            'email' => 'required|email',
+            'password' => 'required|min:6',
+        ]);
+
+        if ($request->mobile_no) {
+            $validator = Validator::make($request->all(), [
+                'mobile_no'    => 'required|digit:8',
+            ]);
+        }
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
+
+
+        $user = User::add($request->all());
+
+        if ($user) {
+            return response()->json([
+                'success' => 1,
+                'message' => 'User added successfully',
+                "user_id" => $user->id
+
+            ], 200);
+        }
+        return response()->json([
+            'success' => 0,
+            'message' => 'Failed to add user'
+        ], 404);
+    }
+
+    public function update(Request $request, $id)
+    {
+        if ($request->mobile_no) {
+            $validator = Validator::make($request->all(), [
+                'mobile_no'    => 'required|digit:8',
+            ]);
+        }
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
+
+        $user =  User::updateRecords($id, $request->all());
+        if (!$user) {
+            return response()->json([
+                'success' => 0,
+                'message' => 'Failed, User not found'
+            ], 404);
+        }
+        return response()->json([
+            'success' => 1,
+            'message' => 'User updated successfully',
+            "user_id" => $id
+        ], 200);
     }
 
     /**

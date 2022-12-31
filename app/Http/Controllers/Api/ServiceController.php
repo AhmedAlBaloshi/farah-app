@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\BaseController as BaseController;
 use App\Models\Service;
+use Illuminate\Support\Facades\Validator;
 
 class ServiceController extends BaseController
 {
@@ -51,11 +52,19 @@ class ServiceController extends BaseController
 
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'service_name'       => 'required',
             'service_name_ar'    => 'required',
             'image'              => 'required'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
+
 
         $service = Service::add($request->all());
 
@@ -74,10 +83,18 @@ class ServiceController extends BaseController
 
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'service_name'       => 'required',
             'service_name_ar'    => 'required',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
+
 
         $service = Service::updateRecords($id, $request->all());
         if (!$service) {

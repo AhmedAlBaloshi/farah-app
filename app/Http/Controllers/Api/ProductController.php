@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
@@ -56,7 +57,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'product_name'      => 'required',
             'product_name_ar'   => 'required',
             'address'           => 'required',
@@ -74,6 +75,13 @@ class ProductController extends Controller
             'items.*.date.required' => 'date field is required',
             'items.*.time.required' => 'time field is required'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
 
         $product = Product::add($request->all());
         if ($product) {
@@ -97,7 +105,7 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $product = Product::with('productAvailability','banner')->where('product_id', $id)->first();
+        $product = Product::with('productAvailability', 'banner')->where('product_id', $id)->first();
 
         if ($product) {
             return response()->json([
@@ -131,7 +139,7 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'product_name'      => 'required',
             'product_name_ar'   => 'required',
             'address'           => 'required',
@@ -144,6 +152,13 @@ class ProductController extends Controller
             'service_list_id'   => 'required',
             'service_id'        => 'required'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
 
         $product = Product::updateRecords($id, $request->all());
 

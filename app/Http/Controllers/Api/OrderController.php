@@ -10,6 +10,7 @@ use App\OrderDetail;
 use App\OrderProduct;
 use App\Payment;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
@@ -85,11 +86,19 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'date' => 'required',
             'price' => 'required',
             'payment_type' => 'required',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
+
         DB::beginTransaction();
         $order = new Order();
         $order->user_id = auth()->user()->id;
@@ -189,11 +198,19 @@ class OrderController extends Controller
 
     public function payment(Request $request, $order_id)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'amount' => 'required',
             'payment_date' => 'required',
             'payment_status' => 'required',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
+
         $discount = $request->discount ? $request->discount : 0;
 
         // update Order payment status
