@@ -19,6 +19,11 @@ class Service extends Model
         'updated_at'
     ];
 
+    public function offers()
+    {
+        return $this->hasMany(Offer::class);
+    }
+
     public static function add($params = [])
     {
         if (!empty($params)) {
@@ -46,7 +51,7 @@ class Service extends Model
     {
         if (!empty($params) && (int)$id > 0) {
 
-            $image ='';
+            $image = '';
             if (!empty($params['image'])) {
                 $file = $params['image'];
                 $fileName = uniqid() . '-' . $file->getClientOriginalName();

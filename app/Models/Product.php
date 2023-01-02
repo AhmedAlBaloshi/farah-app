@@ -34,6 +34,11 @@ class Product extends Model
     {
         return $this->hasOne("App\Models\Service", "service_id", "service_id");
     }
+    
+    public function offers()
+    {
+        return $this->hasMany(Offer::class);
+    }
     public function banner()
     {
         return $this->hasOne("App\Models\Banner");
