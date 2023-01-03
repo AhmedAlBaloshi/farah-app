@@ -88,7 +88,9 @@ class OrderController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'date' => 'required',
-            'price' => 'required',
+            'grand_total' => 'required',
+            'items.*.price' => 'required',
+            'items.*.amount' => 'required',
             'payment_type' => 'required',
         ]);
 
@@ -110,39 +112,43 @@ class OrderController extends Controller
         $order->date = $request->date;
         $order->save();
 
-        $detail = new OrderDetail();
-        $detail->order_id = $order->id;
-        $detail->product_id = $request->product_id;
-        $detail->price = $request->price;
-        $order->tax = $request->taxes;
+        foreach ($request->items as $item) {
+            $detail = new OrderDetail();
+            $detail->order_id = $order->id;
+            $detail->price = $item['amount'];
+            $order->tax = $item['taxes'];
 
-        if ($request->product_id) {
-            $detail->quantity = $request->quantity;
-        }
-        $detail->payment_status = $request->payment_status;
-        $detail->booking_date = $request->date;
-        $detail->booking_start_time = $request->start_time;
-        $detail->booking_end_time = $request->end_time;
-        $detail->save();
+            if (isset($item['product_id']) && !empty($item['product_id'])) {
+                $detail->product_id = $item['product_id'];
+                $detail->quantity = $item['total_quantities'];
+            } else {
+                $detail->booking_date = $item['book_date'];
+                $detail->booking_start_time = $item['start_time'];
+                $detail->booking_end_time = $item['end_time'];
+            }
 
-        if ($request->product_id) {
-            $orderProduct = new OrderProduct();
-            $orderProduct->product_id = $request->product_id;
-            $orderProduct->order_id = $order->id;
-            $orderProduct->quantity = $request->quantity;
-            $orderProduct->amount = $request->price;
-            $orderProduct->timestamps = false;
+            $detail->payment_status = $item['payment_status'];
+            $detail->save();
 
-            $orderProduct->save();
-        }
-        if ($request->service_id) {
-            $bookTimeSlot = new OrderBookTimeSlot();
-            $bookTimeSlot->order_id = $order->id;
-            $bookTimeSlot->service_id = $request->service_id;
-            $bookTimeSlot->book_date = $request->book_date;
-            $bookTimeSlot->book_time = $request->book_time;
-            $bookTimeSlot->timestamps = false;
-            $bookTimeSlot->save();
+            if (isset($item['product_id']) && !empty($item['product_id'])) {
+                $orderProduct = new OrderProduct();
+                $orderProduct->product_id = $item['product_id'];
+                $orderProduct->order_id = $order->id;
+                $orderProduct->quantity = $item['quantity'];
+                $orderProduct->amount = $item['price'];
+                $orderProduct->timestamps = false;
+
+                $orderProduct->save();
+            }
+            if (isset($item['service_id']) && !empty($item['service_id'])) {
+                $bookTimeSlot = new OrderBookTimeSlot();
+                $bookTimeSlot->order_id = $order->id;
+                $bookTimeSlot->service_id = $item['service_id'];
+                $bookTimeSlot->book_date = $item['book_date'];
+                $bookTimeSlot->book_time = $item['book_time'];
+                $bookTimeSlot->timestamps = false;
+                $bookTimeSlot->save();
+            }
         }
         DB::commit();
         if ($order) {

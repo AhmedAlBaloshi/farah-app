@@ -63,6 +63,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     //USERS
     Route::get('get-customers', 'Api\UserController@getCustomers');
     Route::post('users', 'Api\UserController@store');
+    Route::post('users/change-password', 'Api\UserController@updatePassword');
     Route::post('users/{id}', 'Api\UserController@update');
     Route::get('get-sellers', 'Api\UserController@getSellers');
     Route::get('get-staffs', 'Api\UserController@getStaffs');
@@ -82,6 +83,9 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     // OFFER
     Route::resource('offers', "Api\OfferController");
+
+    // PACKAGES
+    Route::resource('packages', "Api\PackageController");
 });
 Route::get('/user', function (Request $request) {
     return $request->user();

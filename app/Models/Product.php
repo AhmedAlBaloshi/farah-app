@@ -59,6 +59,10 @@ class Product extends Model
         return $this->hasMany("App\Models\ProductAvailability", "product_id", "product_id");
     }
 
+    public function packages(){
+        return $this->belongsToMany(Package::class, 'package_services');
+    }
+
     public static function add($params=[])
     {
         if(!empty($params)) {

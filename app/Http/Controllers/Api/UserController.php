@@ -66,6 +66,40 @@ class UserController extends BaseController
         ], 404);
     }
 
+    public function updatePassword(Request $request)
+    {
+        # Validation
+        $validator = Validator::make($request->all(), [
+            'old_password' => 'required',
+            'new_password' => 'required|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
+
+        #Match The Old Password
+        if (!Hash::check($request->old_password, auth()->user()->password)) {
+            return response()->json([
+                'success' => 0,
+                'message' => "Old Password Doesn't match"
+            ], 400);
+        }
+
+        #Update the new Password
+        User::whereId(auth()->user()->id)->update([
+            'password' => Hash::make($request->new_password)
+        ]);
+
+        return response()->json([
+            'success' => 0,
+            'message' => 'Password changed successfully'
+        ], 404);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

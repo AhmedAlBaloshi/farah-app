@@ -24,6 +24,11 @@ class Service extends Model
         return $this->hasMany(Offer::class);
     }
 
+    public function packages()
+    {
+        return $this->belongsToMany(Package::class, 'package_services');
+    }
+
     public static function add($params = [])
     {
         if (!empty($params)) {
