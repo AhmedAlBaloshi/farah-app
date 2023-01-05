@@ -17,7 +17,7 @@ class PackageController extends Controller
      */
     public function index()
     {
-        $packages = Package::with('products', 'services')->get();
+        $packages = Package::with('products', 'services')->latest()->paginate();
         if ($packages) {
             return response()->json([
                 'success' => 1,
