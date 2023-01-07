@@ -18,12 +18,12 @@ class Package extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'package_services');
+        return $this->belongsToMany(Product::class, 'package_services', 'product_id', 'product_id');
     }
 
     public function services()
     {
-        return $this->belongsToMany(Service::class, 'package_services');
+        return $this->belongsToMany(Service::class, 'package_services', 'service_id', 'service_id');
     }
 
     public static function add($params = [])

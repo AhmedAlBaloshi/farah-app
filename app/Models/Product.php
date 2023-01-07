@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
+    protected $primaryKey = 'product_id';
     protected $connection = 'farah';
     protected $table      = 'product';
-    protected $primaryKey = 'product_id';
     public $timestamps    = true;
-    
+
     protected $fillable = [
         'product_name',
         'product_name_ar',
@@ -34,14 +34,14 @@ class Product extends Model
     {
         return $this->hasOne("App\Models\Service", "service_id", "service_id");
     }
-    
+
     public function offers()
     {
         return $this->hasMany(Offer::class);
     }
     public function banner()
     {
-        return $this->hasOne("App\Models\Banner");
+        return $this->hasOne("App\Models\Banner",'product_id');
     }
 
     public function serviceList()
@@ -59,14 +59,15 @@ class Product extends Model
         return $this->hasMany("App\Models\ProductAvailability", "product_id", "product_id");
     }
 
-    public function packages(){
+    public function packages()
+    {
         return $this->belongsToMany(Package::class, 'package_services');
     }
 
-    public static function add($params=[])
+    public static function add($params = [])
     {
-        if(!empty($params)) {
-            
+        if (!empty($params)) {
+
             $product =  self::create([
                 'product_name'      => $params['product_name'],
                 'product_name_ar'   => $params['product_name_ar'],
@@ -84,7 +85,7 @@ class Product extends Model
             ]);
 
             // add records in product availability
-            if(!empty($params['items'])) {
+            if (!empty($params['items'])) {
                 $availabilityParams = [];
                 foreach ($params['items'] as $key => $item) {
                     $availabilityParams[] = [
@@ -101,12 +102,12 @@ class Product extends Model
         }
     }
 
-    public static function updateRecords($id, $params=[])
+    public static function updateRecords($id, $params = [])
     {
-        if(!empty($params) && (int)$id > 0) {
-            
-            $product = Product::where('product_id',$id)->first();
-            if($product) {
+        if (!empty($params) && (int)$id > 0) {
+
+            $product = Product::where('product_id', $id)->first();
+            if ($product) {
                 $product->product_name      = $params['product_name'];
                 $product->product_name_ar   = $params['product_name_ar'];
                 $product->address           = $params['address'];
@@ -124,7 +125,7 @@ class Product extends Model
             }
 
             // add records in product availability
-            if(!empty($params['items'])) {
+            if (!empty($params['items'])) {
                 $availabilityParams = [];
                 foreach ($params['items'] as $key => $item) {
                     $availabilityParams[] = [
@@ -140,5 +141,4 @@ class Product extends Model
             }
         }
     }
-    
 }
