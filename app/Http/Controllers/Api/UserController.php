@@ -139,6 +139,9 @@ class UserController extends BaseController
 
     public function update(Request $request, $id)
     {
+        $validator = Validator::make($request->all(), [
+        ]);
+
         if ($request->mobile_no) {
             $validator = Validator::make($request->all(), [
                 'mobile_no'    => 'required|digit:8',
