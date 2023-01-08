@@ -12,9 +12,8 @@ return [
     | as required, but they're a perfect start for most applications.
     |
     */
-
     'defaults' => [
-        'guard' => 'api',
+        'guard' => strstr("$_SERVER[REQUEST_URI]", 'api')?'api':'web',
         'passwords' => 'users',
     ],
 

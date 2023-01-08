@@ -21,9 +21,14 @@ class ServiceList extends Model
         'service_id'
     ];
 
+    public function subServices()
+    {
+        return $this->hasMany("App\Models\SubService", "service_list_id");
+    }
+
     public function service()
     {
-        return $this->hasOne("App\Models\Service", "service_id", "service_id");
+        return $this->belongsTo("App\Models\Service", "service_id");
     }
 
     public static function add($params = [])
@@ -33,11 +38,11 @@ class ServiceList extends Model
             $image = '';
             if (!empty($params['image'])) {
                 $file = $params['image'];
-                $fileName = uniqid().'-'.$file->getClientOriginalName();
+                $fileName = uniqid() . '-' . $file->getClientOriginalName();
 
                 //Move Uploaded File
                 $destinationPath = 'api/service-list-image';
-                $file->move($destinationPath,$fileName);
+                $file->move($destinationPath, $fileName);
                 $image = $fileName;
             }
 
@@ -56,11 +61,11 @@ class ServiceList extends Model
             $image = '';
             if (!empty($params['image'])) {
                 $file = $params['image'];
-                    $fileName = uniqid().'-'.$file->getClientOriginalName();
-                    //Move Uploaded File
-                    $destinationPath = 'api/service-list-image';
-                    $file->move($destinationPath,$fileName);
-                    $image = $fileName;
+                $fileName = uniqid() . '-' . $file->getClientOriginalName();
+                //Move Uploaded File
+                $destinationPath = 'api/service-list-image';
+                $file->move($destinationPath, $fileName);
+                $image = $fileName;
             }
 
             $serviceList = ServiceList::where('service_list_id', $id)->first();

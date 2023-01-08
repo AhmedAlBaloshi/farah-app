@@ -19,6 +19,11 @@ class Service extends Model
         'updated_at'
     ];
 
+    public function lists()
+    {
+        return $this->hasMany(ServiceList::class, "service_id");
+    }
+
     public function offers()
     {
         return $this->hasMany(Offer::class);

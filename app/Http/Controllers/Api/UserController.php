@@ -95,9 +95,9 @@ class UserController extends BaseController
         ]);
 
         return response()->json([
-            'success' => 0,
+            'success' => 1,
             'message' => 'Password changed successfully'
-        ], 404);
+        ], 200);
     }
 
     public function store(Request $request)

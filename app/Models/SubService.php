@@ -21,7 +21,12 @@ class SubService extends Model
 
     public function serviceList()
     {
-        return $this->hasOne("App\Models\ServiceList", "service_list_id", "service_list_id");
+        return $this->belongsTo("App\Models\ServiceList", "service_list_id");
+    }
+    
+    public function products()
+    {
+        return $this->hasMany("App\Models\Product", "sub_service_id");
     }
 
     public static function add($params = [])

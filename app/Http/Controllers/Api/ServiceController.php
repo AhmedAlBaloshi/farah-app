@@ -11,7 +11,7 @@ class ServiceController extends BaseController
 {
     public function index(Request $request)
     {
-        $services = Service::latest()->paginate(10);
+        $services = Service::with('lists')->latest()->paginate(10);
 
         if ($services) {
             return response()->json([

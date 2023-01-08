@@ -50,7 +50,8 @@ class FeedbackController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'description' => 'required',
-            'user_id' => 'required'
+            'user_id' => 'required',
+            'rating' => 'required',
         ]);
 
         if ($validator->fails()) {

@@ -10,10 +10,12 @@ class Feedback extends Model
     protected $table = 'feedback';
     protected $fillable = [
         'description',
-        'user_id'
+        'user_id',
+        'rating'
     ];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class, 'user_id');
     }
 
@@ -22,7 +24,8 @@ class Feedback extends Model
         if (!empty($params)) {
             return self::create([
                 'description' => $params['description'],
-                'user_id'       => $params['user_id']
+                'user_id'       => $params['user_id'],
+                'rating'       => $params['rating'],
             ]);
         }
     }

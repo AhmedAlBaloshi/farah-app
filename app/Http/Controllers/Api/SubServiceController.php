@@ -16,7 +16,7 @@ class SubServiceController extends Controller
      */
     public function index(Request $request)
     {
-        $query = SubService::with('serviceList');
+        $query = SubService::with('products');
         if ($request->service_list_id) {
             $query->where('service_list_id', $request->service_list_id);
         }

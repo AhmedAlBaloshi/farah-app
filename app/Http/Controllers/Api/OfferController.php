@@ -14,9 +14,16 @@ class OfferController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $offers = Offer::with('product', 'service')->latest()->paginate(10);
+        $query  = Offer::with('product', 'service')->latest();
+        if($request->search){
+            $query = $query->where('id',$request->search)
+            ->orWhere('title','like',"%$request->search%")
+            ->orWhere('product_id',$request->search)
+            ->orWhere('service_id',$request->search);
+        }
+        $offers = $query->paginate(10);
 
         if ($offers) {
             return response()->json([

@@ -16,7 +16,7 @@ class ServiceListController extends BaseController
      */
     public function index(Request $request)
     {
-        $query = ServiceList::with('service');
+        $query = ServiceList::with('subServices');
 
         if ($request->service_id) {
             $query->where('service_id', $request->service_id);
