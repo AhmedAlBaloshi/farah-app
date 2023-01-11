@@ -30,6 +30,9 @@ Route::group([
 });
 
 Route::group(['middleware' => 'auth:api'], function () {
+    // SEARCH API
+    Route::get('search', "Api\BaseController@search");
+
     // SERVICE API
     Route::get('services', "Api\ServiceController@index");
     Route::post('services', "Api\ServiceController@store");
@@ -45,6 +48,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     // PRODUCT API
     Route::resource('product', "Api\ProductController");
+    Route::post('product/{id}', "Api\ProductController@update");
 
     // CATEGORY LIST API
     Route::resource('category', "Api\CategoryController");

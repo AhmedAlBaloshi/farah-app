@@ -110,7 +110,7 @@ class UserController extends BaseController
 
         if ($request->mobile_no) {
             $validator = Validator::make($request->all(), [
-                'mobile_no'    => 'required|digit:8',
+                'mobile_no'    => 'required|digits:8',
             ]);
         }
         if ($validator->fails()) {
@@ -144,7 +144,7 @@ class UserController extends BaseController
 
         if ($request->mobile_no) {
             $validator = Validator::make($request->all(), [
-                'mobile_no'    => 'required|digit:8',
+                'mobile_no'    => 'required|digits:8',
             ]);
         }
 

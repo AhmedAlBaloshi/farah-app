@@ -18,7 +18,6 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $fillable = [
         'firstname',
-        'email',
         'password',
         'firstname',
         'email',
@@ -99,6 +98,7 @@ class User extends Authenticatable implements JWTSubject
                 $user->firstname = isset($params['firstname']) ? $params['firstname'] : $user->firstname;
                 $user->lastname = isset($params['lastname']) ? $params['lastname'] : null;
                 $user->mobile_no = isset($params['mobile_no']) ? $params['mobile_no'] : null;
+                $user->email = $params['email'];
                 $user->profile_image = $image;
                 $user->role_id = isset($params['role_id']) ? $params['role_id'] : 2;
                 $user->address = isset($params['address']) ? $params['address'] : null;

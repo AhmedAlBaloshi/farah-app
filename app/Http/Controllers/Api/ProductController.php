@@ -60,6 +60,7 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'product_name'      => 'required',
             'product_name_ar'   => 'required',
+            'product_image'   => 'required',
             'address'           => 'required',
             'address_ar'        => 'required',
             'latitude'          => 'required',

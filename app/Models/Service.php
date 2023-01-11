@@ -15,6 +15,7 @@ class Service extends Model
         'service_name',
         'service_name_ar',
         'image',
+        'icon',
         'created_at',
         'updated_at'
     ];
@@ -48,11 +49,22 @@ class Service extends Model
                 $file->move($destinationPath, $fileName);
                 $image = $fileName;
             }
+            $icon = '';
+            if (!empty($params['icon'])) {
+                $file = $params['icon'];
+                $fileName = uniqid() . '-' . $file->getClientOriginalName();
+
+                //Move Uploaded File
+                $destinationPath = 'api/service-icon';
+                $file->move($destinationPath, $fileName);
+                $icon = $fileName;
+            }
 
             return self::create([
                 'service_name'     => $params['service_name'],
                 'service_name_ar'  => $params['service_name_ar'],
-                'image'            => $image
+                'image'            => $image,
+                'icon'            => $icon,
             ]);
         }
     }
@@ -71,6 +83,16 @@ class Service extends Model
                 $file->move($destinationPath, $fileName);
                 $image = $fileName;
             }
+            $icon = '';
+            if (!empty($params['icon'])) {
+                $file = $params['icon'];
+                $fileName = uniqid() . '-' . $file->getClientOriginalName();
+
+                //Move Uploaded File
+                $destinationPath = 'api/service-icon';
+                $file->move($destinationPath, $fileName);
+                $icon = $fileName;
+            }
 
             $service = Service::where('service_id', $id)->first();
             if ($service) {
@@ -78,6 +100,9 @@ class Service extends Model
                 $service->service_name_ar  = $params['service_name_ar'];
                 if (!empty($image)) {
                     $service->image = $image;
+                }
+                if (!empty($icon)) {
+                    $service->icon = $icon;
                 }
                 $service->save();
                 return $service;

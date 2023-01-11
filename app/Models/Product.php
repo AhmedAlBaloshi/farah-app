@@ -18,6 +18,7 @@ class Product extends Model
         'address',
         'address_ar',
         'latitude',
+        'product_image',
         'longitude',
         'description',
         'description_ar',
@@ -41,7 +42,7 @@ class Product extends Model
     }
     public function banner()
     {
-        return $this->hasOne("App\Models\Banner",'product_id');
+        return $this->hasOne("App\Models\Banner", 'product_id');
     }
 
     public function serviceList()
@@ -67,6 +68,16 @@ class Product extends Model
     public static function add($params = [])
     {
         if (!empty($params)) {
+            $image = '';
+            if (!empty($params['image'])) {
+                $file = $params['image'];
+                $fileName = uniqid() . '-' . $file->getClientOriginalName();
+
+                //Move Uploaded File
+                $destinationPath = 'api/product-image';
+                $file->move($destinationPath, $fileName);
+                $image = $fileName;
+            }
 
             $product =  self::create([
                 'product_name'      => $params['product_name'],
@@ -75,6 +86,7 @@ class Product extends Model
                 'address_ar'        => $params['address_ar'],
                 'latitude'          => $params['latitude'],
                 'longitude'         => $params['longitude'],
+                'product_image'         => $image,
                 'description'       => $params['description'],
                 'description_ar'    => $params['description_ar'],
                 'rate'              => $params['rate'],
@@ -106,6 +118,17 @@ class Product extends Model
     {
         if (!empty($params) && (int)$id > 0) {
 
+            $image = '';
+            if (!empty($params['image'])) {
+                $file = $params['image'];
+                $fileName = uniqid() . '-' . $file->getClientOriginalName();
+
+                //Move Uploaded File
+                $destinationPath = 'api/product-image';
+                $file->move($destinationPath, $fileName);
+                $image = $fileName;
+            }
+
             $product = Product::where('product_id', $id)->first();
             if ($product) {
                 $product->product_name      = $params['product_name'];
@@ -115,6 +138,9 @@ class Product extends Model
                 $product->latitude          = $params['latitude'];
                 $product->longitude         = $params['longitude'];
                 $product->description       = $params['description'];
+                if (!empty($image)) {
+                    $product->product_image = $image;
+                }
                 $product->description_ar    = $params['description_ar'];
                 $product->rate              = $params['rate'];
                 $product->is_active         = !empty($params['is_active']) ? 1 : 0;
