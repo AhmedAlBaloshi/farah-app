@@ -16,7 +16,7 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Category::with('service', 'category','products');
+        $query = Category::with('service', 'category');
         if ($request->service_id) {
             $query->where('service_id', $request->service_id);
         }
