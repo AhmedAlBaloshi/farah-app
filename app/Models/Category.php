@@ -27,6 +27,10 @@ class Category extends Model
         return $this->hasOne("App\Models\Service", "service_id", "service_id");
     }
 
+    public function products(){
+        return $this->hasMany('App\Models\Product','category_id');
+    }
+
     public function category()
     {
         return $this->belongsTo("App\Models\Category", "parent_category", "category_id");

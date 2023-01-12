@@ -16,7 +16,7 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Category::with('service', 'category');
+        $query = Category::with('service', 'category','products');
         if ($request->service_id) {
             $query->where('service_id', $request->service_id);
         }
@@ -90,7 +90,7 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        $category  = Category::where('category_id', $id)->first();
+        $category  = Category::with('products')->where('category_id', $id)->first();
         if ($category) {
             return response()->json([
                 'success' => 1,

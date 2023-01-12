@@ -26,6 +26,10 @@ class ProductController extends Controller
         if ($request->sub_service_id) {
             $query->where('sub_service_id', $request->sub_service_id);
         }
+        if ($request->category_id) {
+            $query->where('category_id', $request->category_id);
+        }
+
         $products = $query->latest()->paginate(10);
         if ($products) {
             return response()->json([

@@ -45,6 +45,11 @@ class Product extends Model
         return $this->hasOne("App\Models\Banner", 'product_id');
     }
 
+    public function category()
+    {
+        return $this->belongsTo("App\Models\Category", "category_id");
+    }
+
     public function serviceList()
     {
         return $this->belongsTo("App\Models\ServiceList", "service_list_id", "service_list_id");
