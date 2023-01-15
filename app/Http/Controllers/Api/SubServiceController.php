@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\SubService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class SubServiceController extends Controller
@@ -16,7 +17,7 @@ class SubServiceController extends Controller
      */
     public function index(Request $request)
     {
-        $query = SubService::with('products');
+        $query = SubService::with('product');
         if ($request->service_list_id) {
             $query->where('service_list_id', $request->service_list_id);
         }
@@ -55,7 +56,8 @@ class SubServiceController extends Controller
         $validator = Validator::make($request->all(), [
             'sub_service_name'    => 'required',
             'sub_service_name_ar' => 'required',
-            'service_list_id'     => 'required'
+            'service_list_id'     => 'required',
+            'detail'     => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -63,7 +65,6 @@ class SubServiceController extends Controller
                 'message' => $validator->errors()
             ], 400);
         }
-
 
         $sub_services = SubService::add($request->all());
 
@@ -88,7 +89,13 @@ class SubServiceController extends Controller
      */
     public function show($id)
     {
-        $service  = SubService::where('sub_service_id', $id)->first();
+        $service  = SubService::select(DB::raw('sub_service.*,AVG(product_rating.rating) as rating'))
+            ->with(['availabilities' => function ($q) {
+                return $q->with('timeSlots');
+            }, 'images'])
+            ->rightJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id')
+            ->where('sub_service.sub_service_id', $id)
+            ->first();
 
         if ($service) {
             return response()->json([

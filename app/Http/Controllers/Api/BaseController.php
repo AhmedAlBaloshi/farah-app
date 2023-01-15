@@ -15,7 +15,7 @@ class BaseController extends Controller
 
     public function search(Request $request)
     {
-        $Products = Product::select('product_id', 'product_name', 'product_name_ar')->where('product_name', 'like', '%' . $request->search . '%')->get();
+        $Products = Product::select('product_id', 'product_name', 'product_name_ar','product_image','rating','rate')->where('product_name', 'like', '%' . $request->search . '%')->get();
         $subServices = SubService::select('sub_service_id', 'sub_service_name', 'sub_service_name_ar')->where('sub_service_name', 'like', '%' . $request->search . '%')->get();
 
         return response()->json([

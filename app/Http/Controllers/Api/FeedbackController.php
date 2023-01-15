@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Feedback;
+use App\Models\ProductRating;
 use Illuminate\Support\Facades\Validator;
 
 class FeedbackController extends Controller
@@ -73,6 +74,38 @@ class FeedbackController extends Controller
         return response()->json([
             'success' => 0,
             'message' => 'Failed to add feedback'
+        ], 404);
+    }
+    public function rating(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'rating' => 'required',
+        ]);
+        if (!$request->service_id && !$request->product_id) {
+            return response()->json([
+                'success' => 0,
+                'message' => 'product_id or service_id will require.'
+            ], 400);
+        }
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
+// dd($request->all());
+        $rating = ProductRating::add($request->all());
+
+        if ($rating) {
+            return response()->json([
+                'success' => 1,
+                'message' => 'Rating added successfully',
+                "rating_id" => $rating->id
+            ], 200);
+        }
+        return response()->json([
+            'success' => 0,
+            'message' => 'Failed to add Rating'
         ], 404);
     }
 

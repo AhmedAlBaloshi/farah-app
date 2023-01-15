@@ -16,18 +16,28 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Category::with('service', 'category');
+        $query = Category::with('service', 'category','products');
+
         if ($request->service_id) {
             $query->where('service_id', $request->service_id);
         }
         if ($request->parent_category) {
             $query->where('parent_category', $request->parent_category);
         }
-        $category = $query->latest()->paginate(10);
-        if ($category) {
+        $categories = $query->latest()->paginate(10);
+        // ->map(function ($category) {
+        //     $category->products = $category->products->take(1);
+        //     return $category;
+        // });
+
+        foreach ($categories as  $category) {
+            $category->setRelation('products', $category->products->take(8));
+        }
+
+        if ($categories) {
             return response()->json([
                 'success' => 1,
-                'categories' => $category
+                'categories' => $categories
             ], 200);
         }
         return response()->json([

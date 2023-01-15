@@ -23,6 +23,7 @@ Route::group([
 ], function ($router) {
 
     Route::post('login', "AuthController@login");
+    Route::post('login/{provider}', "AuthController@OAuth");
     Route::post('signup', "AuthController@signup");
     Route::get('user-profile', "AuthController@userProfile");
     Route::post('logout', 'AuthController@logout');
@@ -57,6 +58,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     // SUB SERVICE LIST API
     Route::resource('sub-service-list', "Api\SubServiceController");
+    Route::post('sub-service-list/{id}', "Api\SubServiceController@update");
     Route::get('get-sub-service-list', "Api\SubServiceController@getSubService");
 
     // ORDER API
@@ -80,6 +82,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('about-us', "Api\AboutUsController");
     Route::resource('terms-of-service', "Api\TermsServiceController");
     Route::resource('feedbacks', "Api\FeedbackController");
+    Route::post('ratings', "Api\FeedbackController@rating");
 
     // SUB BANNER
     Route::resource('sub-banners', "Api\BannerController");
@@ -90,7 +93,12 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     // PACKAGES
     Route::resource('packages', "Api\PackageController");
+
+    // THAWANI PAYMENT
 });
+Route::get('thawani-pay/{order_id}', 'Api\ThawaniController@checkout');
+Route::get('thawani-pay/success/{order_id}', 'Api\ThawaniController@success');
+Route::get('thawani-pay/cancel/{order_id}', 'Api\ThawaniController@cancel');
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:api');

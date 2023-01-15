@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
@@ -64,7 +65,7 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'product_name'      => 'required',
             'product_name_ar'   => 'required',
-            'product_image'   => 'required',
+            'image'   => 'required',
             'address'           => 'required',
             'address_ar'        => 'required',
             'latitude'          => 'required',
@@ -110,7 +111,10 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $product = Product::with('productAvailability', 'banner')->where('product_id', $id)->first();
+        $product = Product::select(DB::raw('product.*,AVG(product_rating.rating) as rating'))
+        ->with('banner')
+        ->rightJoin('product_rating', 'product_rating.product_id', '=', 'product.product_id')
+        ->where('product.product_id', $id)->first();
 
         if ($product) {
             return response()->json([

@@ -21,6 +21,7 @@ class Product extends Model
         'product_image',
         'longitude',
         'description',
+        'category_id',
         'description_ar',
         'rate',
         'is_active',
@@ -60,11 +61,6 @@ class Product extends Model
         return $this->belongsTo("App\Models\SubService", "sub_service_id", "sub_service_id");
     }
 
-    public function productAvailability()
-    {
-        return $this->hasMany("App\Models\ProductAvailability", "product_id", "product_id");
-    }
-
     public function packages()
     {
         return $this->belongsToMany(Package::class, 'package_services');
@@ -84,15 +80,16 @@ class Product extends Model
                 $image = $fileName;
             }
 
-            $product =  self::create([
+            return self::create([
                 'product_name'      => $params['product_name'],
                 'product_name_ar'   => $params['product_name_ar'],
                 'address'           => $params['address'],
                 'address_ar'        => $params['address_ar'],
                 'latitude'          => $params['latitude'],
                 'longitude'         => $params['longitude'],
-                'product_image'         => $image,
+                'product_image'     => $image,
                 'description'       => $params['description'],
+                'category_id'       => $params['category_id'],
                 'description_ar'    => $params['description_ar'],
                 'rate'              => $params['rate'],
                 'is_active'         => !empty($params['is_active']) ? 1 : 0,
@@ -100,22 +97,6 @@ class Product extends Model
                 'sub_service_id'    => $params['sub_service_id'],
                 'service_id'        => $params['service_id']
             ]);
-
-            // add records in product availability
-            if (!empty($params['items'])) {
-                $availabilityParams = [];
-                foreach ($params['items'] as $key => $item) {
-                    $availabilityParams[] = [
-                        'product_id' => $product->product_id,
-                        'date'       => $item['date'],
-                        'time'       => $item['time'],
-                        'is_active'  => !empty($item['is_active']) ? 1 : 0,
-                    ];
-                }
-                ProductAvailability::add($availabilityParams);
-            }
-
-            return $product;
         }
     }
 
@@ -143,6 +124,7 @@ class Product extends Model
                 $product->latitude          = $params['latitude'];
                 $product->longitude         = $params['longitude'];
                 $product->description       = $params['description'];
+                $product->category_id       = $params['category_id'];
                 if (!empty($image)) {
                     $product->product_image = $image;
                 }
@@ -155,21 +137,7 @@ class Product extends Model
                 $product->update();
             }
 
-            // add records in product availability
-            if (!empty($params['items'])) {
-                $availabilityParams = [];
-                foreach ($params['items'] as $key => $item) {
-                    $availabilityParams[] = [
-                        'id'         => !empty($item['id']) ? $item['id'] : 0,
-                        'product_id' => $product->product_id,
-                        'date'       => $item['date'],
-                        'time'       => $item['time'],
-                        'is_active'  => !empty($item['is_active']) ? 1 : 0,
-                    ];
-                }
-                ProductAvailability::updateRecords($availabilityParams);
-                return $product;
-            }
+            return $product;
         }
     }
 }
