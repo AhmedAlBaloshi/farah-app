@@ -9,12 +9,17 @@ class Banner extends Model
     protected $table = 'banner';
     protected $fillable = [
         'image',
-        'product_id'
+        'product_id',
+        'sub_service_id'
     ];
 
     public function product()
     {
         return $this->hasOne("App\Models\Product", "product_id", "product_id");
+    }
+    public function subService()
+    {
+        return $this->hasOne("App\Models\SubService", "sub_service_id", "sub_service_id");
     }
 
     public static function add($params = [])
@@ -31,11 +36,8 @@ class Banner extends Model
                 $file->move($destinationPath, $fileName);
                 $image = $fileName;
             }
-
-            return self::create([
-                'image'            => $image,
-                'product_id'       => $params['product_id']
-            ]);
+            $params['image'] = $image;
+            return self::create($params);
         }
     }
 
@@ -53,12 +55,10 @@ class Banner extends Model
                 $file->move($destinationPath, $fileName);
                 $image = $fileName;
             }
-
+            $params['image'] = $image;
             $banner = Banner::findOrFail($id);
             if ($banner) {
-                $banner->image = $image;
-                $banner->product_id = $params['product_id'];
-                $banner->save();
+                $banner->update($params);
                 return $banner;
             }
         }

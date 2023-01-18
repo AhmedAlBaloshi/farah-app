@@ -51,7 +51,7 @@
                             @foreach($subService as $key => $service)
                             <tr>
                                 <td> {{ $service->service_list_id }}</td>
-                                <td> {{ @$service->service->service_name }}</td>
+                                <td> {{ @$service->serviceList->service_name }}</td>
                                 <td> {{ $service->sub_service_name }}</td>
                                 <td> {{ $service->sub_service_name_ar }}</td>
                                 <td>

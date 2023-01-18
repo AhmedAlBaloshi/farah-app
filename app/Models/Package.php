@@ -9,6 +9,8 @@ class Package extends Model
     protected $table = 'packages';
     protected $fillable = [
         'title',
+        'image',
+        'detail',
         'amount',
         'start_date',
         'start_time',
@@ -18,19 +20,31 @@ class Package extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'package_services', 'product_id', 'product_id');
+        return $this->belongsToMany(Product::class, 'package_services', 'package_id', 'product_id');
     }
 
     public function services()
     {
-        return $this->belongsToMany(Service::class, 'package_services', 'service_id', 'service_id');
+        return $this->belongsToMany(SubService::class, 'package_services', 'service_id', 'service_id');
     }
 
     public static function add($params = [])
     {
+        $image = '';
+        if (!empty($params['image'])) {
+            $file = $params['image'];
+            $fileName = uniqid() . '-' . $file->getClientOriginalName();
+
+            //Move Uploaded File
+            $destinationPath = 'api/package-image';
+            $file->move($destinationPath, $fileName);
+            $image = $fileName;
+        }
         if (!empty($params)) {
             $package =  self::create([
                 'title' => $params['title'],
+                'detail' => $params['detail'],
+                'image' => $image,
                 'amount' => $params['amount'],
                 'start_date' => $params['start_date'],
                 'start_time' => $params['start_time'],
@@ -60,8 +74,22 @@ class Package extends Model
         if (!empty($params) && (int)$id > 0) {
 
             $package = Package::findOrFail($id);
+
+            $image = '';
+            if (!empty($params['image'])) {
+                $file = $params['image'];
+                $fileName = uniqid() . '-' . $file->getClientOriginalName();
+
+                //Move Uploaded File
+                $destinationPath = 'api/package-image';
+                $file->move($destinationPath, $fileName);
+                $image = $fileName;
+            }
+
             if ($package) {
                 $package->title = $params['title'];
+                $package->detail   = $params['detail'];
+                $package->image   = $image;
                 $package->amount   = $params['amount'];
                 $package->start_date = $params['start_date'];
                 $package->start_time = $params['start_time'];

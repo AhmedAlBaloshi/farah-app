@@ -22,15 +22,29 @@ class Offer extends Model
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
-    
+
     public function service()
     {
-        return $this->belongsTo(Service::class, 'service_id');
+        return $this->belongsTo(SubService::class, 'service_id');
     }
 
     public static function add($params = [])
     {
         if (!empty($params)) {
+            if ($params['product_id']) {
+                $product = Product::findOrFail($params['product_id']);
+                $discount = ($params['percentage'] / 100) * $product->rate;
+                $product->discount = $discount;
+                $product->update();
+            }
+            if ($params['service_id']) {
+                $product = Product::latest()->where('sub_service_id', $params['service_id'])->first();
+                if ($product) {
+                    $discount = ($params['percentage'] / 100) * $product->rate;
+                    $product->discount = $discount;
+                    $product->update();
+                }
+            }
             return self::create($params);
         }
     }
@@ -41,6 +55,20 @@ class Offer extends Model
             $offer = Offer::where('id', $id)->first();
             if ($offer) {
                 $offer->update($params);
+                if ($params['product_id']) {
+                    $product = Product::findOrFail($params['product_id']);
+                    $discount = ($params['percentage'] / 100) * $product->rate;
+                    $product->discount = $discount;
+                    $product->update();
+                }
+                if ($params['service_id']) {
+                    $product = Product::latest()->where('sub_service_id', $params['service_id'])->first();
+                    if ($product) {
+                        $discount = ($params['percentage'] / 100) * $product->rate;
+                        $product->discount = $discount;
+                        $product->update();
+                    }
+                }
                 return $offer;
             }
         }

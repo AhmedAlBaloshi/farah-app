@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller as Controller;
 use App\Models\Product;
 use App\Models\SubService;
+use Illuminate\Support\Facades\DB;
 
 /*use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Password;*/
@@ -15,12 +16,20 @@ class BaseController extends Controller
 
     public function search(Request $request)
     {
-        $Products = Product::select('product_id', 'product_name', 'product_name_ar','product_image','rating','rate')->where('product_name', 'like', '%' . $request->search . '%')->get();
-        $subServices = SubService::select('sub_service_id', 'sub_service_name', 'sub_service_name_ar')->where('sub_service_name', 'like', '%' . $request->search . '%')->get();
+        $Products = Product::where('product_name', 'like', '%' . $request->search . '%')->get();
+        $subServices = SubService::select(DB::raw('sub_service.*, product.product_image,  product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
+            ->with('banner')
+            ->leftJoin('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
+            ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id')
+            ->where('sub_service_name', 'like', '%' . $request->search . '%')
+            ->groupBy('sub_service.sub_service_id')->get();
 
         return response()->json([
             'success' => 1,
-            'data' => $Products->merge($subServices)
+            'data' => [
+                'products' => $Products,
+                'sub_services' => $subServices
+            ]
         ], 200);
     }
 

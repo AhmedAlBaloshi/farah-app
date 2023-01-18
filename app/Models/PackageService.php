@@ -20,7 +20,7 @@ class PackageService extends Model
                 self::create([
                     'package_id' => $param['package_id'],
                     'product_id' => $param['product_id'],
-                    'service_id' => $param['service_id'],
+                    // 'service_id' => $param['service_id'],
                 ]);
             }
         }
@@ -32,9 +32,9 @@ class PackageService extends Model
             foreach ($params as $key => $param) {
                 PackageService::where('package_id', $param['package_id'])->delete();
                 self::create([
-                    'package_id' => $param['product_id'],
+                    'package_id' => $param['package_id'],
                     'product_id' => $param['product_id'],
-                    'service_id'       => $param['service_id'],
+                    // 'service_id'       => $param['service_id'],
                 ]);
             }
             return $params;

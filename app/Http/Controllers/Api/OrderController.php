@@ -122,6 +122,7 @@ class OrderController extends Controller
                 $detail->product_id = $item['product_id'];
                 $detail->quantity = $item['total_quantities'];
             } else {
+                $detail->service_id = $item['service_id'];
                 $detail->booking_date = $item['book_date'];
                 $detail->booking_start_time = $item['start_time'];
                 $detail->booking_end_time = $item['end_time'];
@@ -179,15 +180,21 @@ class OrderController extends Controller
             ->where('orders.id', $id)
             ->first();
 
-        $orderDetails = Order::select(DB::raw('OD.*,CONCAT(S.firstname, " ",S.lastname) as seller_name, P.product_name as product_name_en, P.product_name_ar as product_name_ar , TS.book_time as book_time, TS.book_date as book_date, OP.quantity as product_qty, OP.amount as product_amount, service.service_name as service_name'))
+        $orderDetails = Order::select(DB::raw('OD.*,CONCAT(S.firstname, " ",S.lastname) as seller_name, P.product_name as product_name_en,
+        P.product_name_ar as product_name_ar ,P.product_image as product_image, TS.book_time as book_time, TS.book_date as book_date,
+         OP.quantity as product_qty, OP.amount as product_amount, SS.sub_service_id as service_id, SS.sub_service_name as service_name,
+         SP.product_image as service_image'))
             ->join('order_details as OD', 'OD.order_id', '=', 'orders.id')
             ->join('users as U', 'U.id', '=', 'orders.user_id')
             ->leftJoin('product as P', 'P.product_id', '=', 'OD.product_id')
             ->leftJoin('order_book_time_slot as TS', 'TS.order_id', '=', 'orders.id')
-            ->leftJoin('service', 'service.service_id', '=', 'TS.service_id')
+            ->leftJoin('sub_service as SS', 'SS.sub_service_id', '=', 'OD.service_id')
+            ->leftJoin('product as SP', 'SP.sub_service_id', '=', 'SS.sub_service_id')
             ->leftJoin('order_product as OP', 'OP.order_id', '=', 'orders.id')
             ->leftJoin('users as S', 'S.id', '=', 'OD.seller_id')
             ->where('orders.id', $id)
+            ->groupBy('SS.sub_service_id')
+            ->groupBy('OD.id')
             ->get();
         $order['details'] = $orderDetails;
         if ($order) {

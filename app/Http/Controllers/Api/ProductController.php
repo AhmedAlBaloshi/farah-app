@@ -28,10 +28,24 @@ class ProductController extends Controller
             $query->where('sub_service_id', $request->sub_service_id);
         }
         if ($request->category_id) {
-            $query->where('category_id', $request->category_id);
+            if ($request->category_id == 'all') {
+                $query->where('category_id', '!=', null)
+                    ->where('category_id', '>', 0);
+            } else {
+                $category_ids = array_map('intval', explode(',', $request->category_id));
+                $query->whereIn('category_id', $category_ids);
+            }
+        }
+        if ($request->sort) {
+            if ($request->sort == 'highest_price')
+                $query->orderBy('rate', 'desc');
+            else if ($request->sort == 'lowest_price')
+                $query->orderBy('rate', 'asc');
+            else if ($request->sort == 'recent')
+                $query->orderBy('product_id', 'desc');
         }
 
-        $products = $query->latest()->paginate(10);
+        $products = $query->paginate(10);
         if ($products) {
             return response()->json([
                 'success' => 1,
@@ -112,9 +126,9 @@ class ProductController extends Controller
     public function show($id)
     {
         $product = Product::select(DB::raw('product.*,AVG(product_rating.rating) as rating'))
-        ->with('banner')
-        ->rightJoin('product_rating', 'product_rating.product_id', '=', 'product.product_id')
-        ->where('product.product_id', $id)->first();
+            ->with('banner')
+            ->rightJoin('product_rating', 'product_rating.product_id', '=', 'product.product_id')
+            ->where('product.product_id', $id)->first();
 
         if ($product) {
             return response()->json([

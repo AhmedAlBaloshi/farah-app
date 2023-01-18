@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Offer;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class OfferController extends Controller
@@ -16,12 +17,17 @@ class OfferController extends Controller
      */
     public function index(Request $request)
     {
-        $query  = Offer::with('product', 'service')->latest();
-        if($request->search){
-            $query = $query->where('id',$request->search)
-            ->orWhere('title','like',"%$request->search%")
-            ->orWhere('product_id',$request->search)
-            ->orWhere('service_id',$request->search);
+        $query  = Offer::with(['product', 'service' => function ($q) {
+            return $q->select(DB::raw('sub_service.sub_service_id as sub_service_id, sub_service.service_list_id as service_list_id, sub_service.sub_service_name as sub_service_name,
+            sub_service.sub_service_name_ar as sub_service_name_ar,product.product_image, product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating, sub_service.created_at as created_at,sub_service.updated_at as updated_at'))
+                ->leftJoin('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
+                ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id');
+        }])->latest();
+        if ($request->search) {
+            $query = $query->where('id', $request->search)
+                ->orWhere('title', 'like', "%$request->search%")
+                ->orWhere('product_id', $request->search)
+                ->orWhere('service_id', $request->search);
         }
         $offers = $query->paginate(10);
 
@@ -101,7 +107,11 @@ class OfferController extends Controller
      */
     public function show($id)
     {
-        $offer  = Offer::with('product','service')->findOrFail($id);
+        $offer  = Offer::with(['product', 'service' => function ($q) {
+            return $q->select(DB::raw('sub_service.*, product.product_image, product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
+                ->leftJoin('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
+                ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id');
+        }])->findOrFail($id);
 
         if ($offer) {
             return response()->json([

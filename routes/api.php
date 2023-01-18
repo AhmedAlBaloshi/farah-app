@@ -31,35 +31,27 @@ Route::group([
 });
 
 Route::group(['middleware' => 'auth:api'], function () {
-    // SEARCH API
-    Route::get('search', "Api\BaseController@search");
 
     // SERVICE API
-    Route::get('services', "Api\ServiceController@index");
     Route::post('services', "Api\ServiceController@store");
-    Route::get('services/{id}', "Api\ServiceController@show");
     Route::post('services/{id}', "Api\ServiceController@update");
     Route::delete('services/{id}', "Api\ServiceController@destroy");
-    Route::get('get-services', "Api\ServiceController@getServices");
 
     // SERVICE LIST API
-    Route::resource('service-list', "Api\ServiceListController");
+    Route::post('service-list', "Api\ServiceListController@store");
     Route::post('service-list/{id}', "Api\ServiceListController@update");
-    Route::get('get-service-list', "Api\ServiceListController@getServiceList");
 
     // PRODUCT API
-    Route::resource('product', "Api\ProductController");
+    Route::post('product', "Api\ProductController@store");
     Route::post('product/{id}', "Api\ProductController@update");
 
     // CATEGORY LIST API
-    Route::resource('category', "Api\CategoryController");
+    Route::post('category', "Api\CategoryController@store");
     Route::post('category/{id}', "Api\CategoryController@update");
-    Route::get('get-category-list', "Api\CategoryController@getServiceList");
 
     // SUB SERVICE LIST API
-    Route::resource('sub-service-list', "Api\SubServiceController");
+    Route::post('sub-service-list', "Api\SubServiceController@store");
     Route::post('sub-service-list/{id}', "Api\SubServiceController@update");
-    Route::get('get-sub-service-list', "Api\SubServiceController@getSubService");
 
     // ORDER API
     Route::resource('orders', 'Api\OrderController');
@@ -74,14 +66,9 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('get-sellers', 'Api\UserController@getSellers');
     Route::get('get-staffs', 'Api\UserController@getStaffs');
 
-    // BANNER
-    Route::resource('banners', "Api\BannerController");
-    Route::post('banners/{id}', "Api\BannerController@update");
-
-    // ABOUT
-    Route::resource('about-us', "Api\AboutUsController");
-    Route::resource('terms-of-service', "Api\TermsServiceController");
+    // FEEDBACK
     Route::resource('feedbacks', "Api\FeedbackController");
+    // Rating
     Route::post('ratings', "Api\FeedbackController@rating");
 
     // SUB BANNER
@@ -89,13 +76,53 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('sub-banners/{id}', "Api\BannerController@update");
 
     // OFFER
-    Route::resource('offers', "Api\OfferController");
+    Route::post('offers', "Api\OfferController@store");
+    Route::put('offers/{id}', "Api\OfferController@update");
 
     // PACKAGES
-    Route::resource('packages', "Api\PackageController");
-
-    // THAWANI PAYMENT
+    Route::post('packages', "Api\PackageController@store");
+    Route::post('packages/{id}', "Api\PackageController@update");
 });
+// SEARCH API
+Route::get('search', "Api\BaseController@search");
+
+// SUB SERVICE LIST API
+Route::resource('sub-service-list', "Api\SubServiceController");
+Route::get('get-sub-service-list', "Api\SubServiceController@getSubService");
+
+// OFFER
+Route::resource('offers', "Api\OfferController");
+
+
+// SERVICE LIST API
+Route::resource('service-list', "Api\ServiceListController");
+Route::get('get-service-list', "Api\ServiceListController@getServiceList");
+
+// SERVICE API
+Route::get('services', "Api\ServiceController@index");
+Route::get('services/{id}', "Api\ServiceController@show");
+Route::get('get-services', "Api\ServiceController@getServices");
+
+// PRODUCT API
+Route::resource('product', "Api\ProductController");
+
+// PACKAGES
+Route::resource('packages', "Api\PackageController");
+
+// CATEGORY LIST API
+Route::resource('category', "Api\CategoryController");
+Route::get('get-category-list', "Api\CategoryController@getServiceList");
+
+// BANNER
+Route::resource('banners', "Api\BannerController");
+Route::post('banners/{id}', "Api\BannerController@update");
+
+//ABOUT US
+Route::resource('about-us', "Api\AboutUsController");
+//TERMS OF SERVICES
+Route::resource('terms-of-service', "Api\TermsServiceController");
+
+//THAWANI PAYMENT
 Route::get('thawani-pay/{order_id}', 'Api\ThawaniController@checkout');
 Route::get('thawani-pay/success/{order_id}', 'Api\ThawaniController@success');
 Route::get('thawani-pay/cancel/{order_id}', 'Api\ThawaniController@cancel');

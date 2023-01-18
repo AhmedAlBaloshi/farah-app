@@ -25,7 +25,7 @@ class SubServiceController extends Controller
      */
     public function index()
     {
-        $subService = SubService::with('service')->get();
+        $subService = SubService::with('serviceList')->get();
         return view('sub-service.list',compact('subService'));
     }
 

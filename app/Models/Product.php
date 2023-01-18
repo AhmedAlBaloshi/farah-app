@@ -58,7 +58,7 @@ class Product extends Model
 
     public function subServiceList()
     {
-        return $this->belongsTo("App\Models\SubService", "sub_service_id", "sub_service_id");
+        return $this->hasOne("App\Models\SubService", "sub_service_id");
     }
 
     public function packages()

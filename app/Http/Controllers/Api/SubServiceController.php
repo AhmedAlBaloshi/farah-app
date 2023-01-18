@@ -17,12 +17,15 @@ class SubServiceController extends Controller
      */
     public function index(Request $request)
     {
-        $query = SubService::with('product');
+        $query = SubService::select(DB::raw('sub_service.*, product.product_image, product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
+            ->leftJoin('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
+            ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id');
         if ($request->service_list_id) {
-            $query->where('service_list_id', $request->service_list_id);
+            $query->where('sub_service.service_list_id', $request->service_list_id);
         }
-        $sub_services = $query->latest()->paginate(10);
-
+        $sub_services = $query->latest('sub_service.created_at')
+            ->groupBy('sub_service.sub_service_id')
+            ->paginate(10);
         if ($sub_services) {
             return response()->json([
                 'success' => 1,
@@ -93,7 +96,7 @@ class SubServiceController extends Controller
             ->with(['availabilities' => function ($q) {
                 return $q->with('timeSlots');
             }, 'images'])
-            ->rightJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id')
+            ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id')
             ->where('sub_service.sub_service_id', $id)
             ->first();
 

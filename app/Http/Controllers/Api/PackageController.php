@@ -17,7 +17,7 @@ class PackageController extends Controller
      */
     public function index()
     {
-        $packages = Package::with('products', 'services')->latest()->paginate();
+        $packages = Package::with('products')->latest()->paginate();
         if ($packages) {
             return response()->json([
                 'success' => 1,
@@ -86,8 +86,8 @@ class PackageController extends Controller
      */
     public function show($id)
     {
-        $package = Package::with('products', 'services')->findOrFail($id);
-
+        // $package = Package::with('products')->findOrFail($id);
+        $package = Package::with('products')->where('id', $id)->first();
         if ($package) {
             return response()->json([
                 'success' => 1,
@@ -120,7 +120,7 @@ class PackageController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+
         $package = Package::updateRecords($id, $request->all());
 
         if (!$package) {
@@ -132,7 +132,7 @@ class PackageController extends Controller
         return response()->json([
             'success' => 1,
             'message' => 'Package updated successfully',
-            "package_id" => $package
+            "package_id" => $id
         ], 200);
     }
 
@@ -146,7 +146,7 @@ class PackageController extends Controller
     {
         if ((int)$id > 0) {
             Package::findOrFail($id)->delete();
-            PackageService::where('package_id',$id)->delete();
+            PackageService::where('package_id', $id)->delete();
             return response()->json([
                 'success' => 1,
                 'message' => 'Product deleted successfully',

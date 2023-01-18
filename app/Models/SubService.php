@@ -20,6 +20,11 @@ class SubService extends Model
         'service_list_id'
     ];
 
+    public function banner()
+    {
+        return $this->hasOne("App\Models\Banner", 'sub_service_id');
+    }
+
     public function serviceList()
     {
         return $this->belongsTo("App\Models\ServiceList", "service_list_id");
