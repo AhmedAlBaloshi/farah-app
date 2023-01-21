@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\SubService;
+use App\OrderDetail;
+use DateTime;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,7 +19,8 @@ class SubServiceController extends Controller
      */
     public function index(Request $request)
     {
-        $query = SubService::select(DB::raw('sub_service.*, product.product_image, product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
+        $query = SubService::select(DB::raw('sub_service.*, product.product_image,  product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
+            ->with('banner')
             ->leftJoin('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
             ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id');
         if ($request->service_list_id) {
@@ -92,14 +95,29 @@ class SubServiceController extends Controller
      */
     public function show($id)
     {
-        $service  = SubService::select(DB::raw('sub_service.*,AVG(product_rating.rating) as rating'))
-            ->with(['availabilities' => function ($q) {
+        $service  = SubService::select(DB::raw('sub_service.*, product.product_image,  product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
+            ->with(['banner', 'availabilities' => function ($q) {
                 return $q->with('timeSlots');
             }, 'images'])
             ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id')
+            ->leftJoin('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
             ->where('sub_service.sub_service_id', $id)
+            ->groupBy('sub_service.sub_service_id')
             ->first();
 
+        foreach ($service->availabilities as $avail) {
+            foreach ($avail->timeSlots as $key => $slot) {
+                $booked = OrderDetail::where('booking_date', $avail->date)
+                    ->where('booking_start_time', $slot->start_time)
+                    ->where('booking_end_time', $slot->end_time)
+                    ->get();
+                if (count($booked) > 0) {
+                    $slot->is_booked = true;
+                } else {
+                    $slot->is_booked = false;
+                }
+            }
+        }
         if ($service) {
             return response()->json([
                 'success' => 1,

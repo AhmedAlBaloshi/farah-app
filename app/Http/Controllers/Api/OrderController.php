@@ -21,7 +21,8 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Order::select('orders.*')->latest()
+        $query = Order::select('orders.*','order_details.delivery_status')->latest()
+            ->join('order_details', 'order_details.order_id', '=', 'orders.id')
             ->join('order_product', 'order_product.order_id', '=', 'orders.id');
 
         if ($request->user_id)
@@ -138,7 +139,7 @@ class OrderController extends Controller
                 $orderProduct->quantity = $item['quantity'];
                 $orderProduct->amount = $item['price'];
                 $orderProduct->timestamps = false;
-
+                
                 $orderProduct->save();
             }
             if (isset($item['service_id']) && !empty($item['service_id'])) {

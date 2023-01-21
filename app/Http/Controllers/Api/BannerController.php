@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class BannerController extends Controller
@@ -16,7 +17,12 @@ class BannerController extends Controller
      */
     public function index()
     {
-        $banners = Banner::with('product','subService')->latest()->paginate(10);
+        $banners = Banner::with(['product', 'subService' => function ($q) {
+            return $q->select(DB::raw('sub_service.*, product.product_image,  product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
+                ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id')
+                ->leftJoin('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
+                ->groupBy('sub_service.sub_service_id');
+        }])->latest()->paginate(10);
 
         if ($banners) {
             return response()->json([
@@ -82,7 +88,12 @@ class BannerController extends Controller
      */
     public function show($id)
     {
-        $banner  = Banner::with('product','subService')->findOrFail($id);
+        $banner  = Banner::with(['product', 'subService' => function ($q) {
+            return $q->select(DB::raw('sub_service.*, product.product_image,  product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
+                ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id')
+                ->leftJoin('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
+                ->groupBy('sub_service.sub_service_id');
+        }])->findOrFail($id);
 
         if ($banner) {
             return response()->json([
