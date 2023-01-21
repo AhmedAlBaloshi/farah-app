@@ -39,7 +39,7 @@ class SubService extends Model
     {
         return $this->hasMany("App\Models\ProductImage", "sub_service_id", "sub_service_id");
     }
-    
+
     public function rating()
     {
         return $this->hasMany("App\Models\ProductRating", "sub_service_id", "sub_service_id");
@@ -70,7 +70,8 @@ class SubService extends Model
                         'date'       => $item['date'],
                         'time'       => $item['time'],
                         'is_active'  => !empty($item['is_active']) ? 1 : 0,
-                        'time_slot' =>  $item['time_slot']
+                        'start_time' =>  $item['start_time'],
+                        'end_time' =>  $item['end_time']
                     ];
                 }
                 ProductAvailability::add($availabilityParams);
@@ -110,7 +111,8 @@ class SubService extends Model
                             'date'       => $item['date'],
                             'time'       => $item['time'],
                             'is_active'  => !empty($item['is_active']) ? 1 : 0,
-                            'time_slot' =>  $item['time_slot']
+                            'start_time' =>  $item['start_time'],
+                            'end_time' =>  $item['end_time']
                         ];
                     }
 

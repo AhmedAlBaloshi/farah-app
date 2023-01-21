@@ -39,17 +39,13 @@ class ProductAvailability extends Model
                 $productAvailable->time = $param['time'];
                 $productAvailable->is_active = !empty($param['is_active']) ? 1 : 0;
                 $productAvailable->save();
-                if (!empty($param['time_slot'])) {
-                    $availableTimeSlot = [];
-                    foreach ($param['time_slot'] as $key => $slot) {
-                        $availableTimeSlot[] = [
-                            'product_availability_id' => $productAvailable->product_availability_id,
-                            'start_time' => $slot['start_time'],
-                            'end_time' => $slot['end_time'],
-                        ];
-                    }
-                    ProductTimeSlot::add($availableTimeSlot);
-                }
+
+                $availableTimeSlot = [
+                    'product_availability_id' => $productAvailable->product_availability_id,
+                    'start_time' => $param['start_time'],
+                    'end_time' => $param['end_time'],
+                ];
+                ProductTimeSlot::add($availableTimeSlot);
             }
         }
     }
@@ -58,7 +54,7 @@ class ProductAvailability extends Model
     {
         $product_available_ids = self::select('product_availability_id')->where('sub_service_id', $sub_service_id)
             ->get()->toArray();
-            // dd($product_available_ids);
+        // dd($product_available_ids);
         if (!empty($params)) {
             self::where('sub_service_id', $sub_service_id)
                 ->delete();
@@ -69,16 +65,12 @@ class ProductAvailability extends Model
                     'time'       => $param['time'],
                     'is_active'  => !empty($param['is_active']) ? 1 : 0
                 ]);
-                if (!empty($param['time_slot'])) {
-                    $availableTimeSlot = [];
-                    foreach ($param['time_slot'] as $key => $slot) {
-                        $availableTimeSlot[] = [
-                            'start_time' => $slot['start_time'],
-                            'end_time' => $slot['end_time'],
-                        ];
-                    }
-                    ProductTimeSlot::updateRecords($availableTimeSlot,$product_available_ids[$key]['product_availability_id'],$productAvailable->product_availability_id);
-                }
+
+                $availableTimeSlot[] = [
+                    'start_time' => $param['start_time'],
+                    'end_time' => $param['end_time'],
+                ];
+                ProductTimeSlot::updateRecords($availableTimeSlot, $product_available_ids[$key]['product_availability_id'], $productAvailable->product_availability_id);
             }
         }
     }
