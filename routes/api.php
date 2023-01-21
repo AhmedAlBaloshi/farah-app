@@ -25,6 +25,8 @@ Route::group([
     Route::post('login', "AuthController@login");
     Route::post('login/{provider}', "AuthController@OAuth");
     Route::post('signup', "AuthController@signup");
+    Route::post('forget-password', "AuthController@forgetPass");
+    Route::post('reset-password', "AuthController@resetPass");
     Route::get('user-profile', "AuthController@userProfile");
     Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');
@@ -89,6 +91,7 @@ Route::get('search', "Api\BaseController@search");
 // SUB SERVICE LIST API
 Route::resource('sub-service-list', "Api\SubServiceController");
 Route::get('get-sub-service-list', "Api\SubServiceController@getSubService");
+Route::get('get-time-slots/{id}/{date}', "Api\SubServiceController@getTimeSlots");
 
 // OFFER
 Route::resource('offers', "Api\OfferController");

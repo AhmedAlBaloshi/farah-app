@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\PasswordResset;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'signup','OAuth']]);
+        $this->middleware('auth:api', ['except' => ['login', 'signup', 'OAuth', 'forgetPass', 'resetPass']]);
     }
 
     public function login(Request $request)
@@ -47,7 +50,7 @@ class AuthController extends Controller
             $newUser->firstname = $request->fullname;
             $newUser->email     = $request->email;
             $newUser->role_id     = '3';
-            $newUser->mobile_no = isset($request->mobile_no)?$request->mobile_no:null;
+            $newUser->mobile_no = isset($request->mobile_no) ? $request->mobile_no : null;
             if ($provider == 'google')
                 $newUser->google_id = $request->id;
             if ($provider == 'facebook')
@@ -88,7 +91,7 @@ class AuthController extends Controller
             'mobile_no' => [
                 'required'
             ],
-            'password'   => 'required'
+            'password'   => 'required|min:6'
         ]);
 
         if ($validator->fails()) {
@@ -115,6 +118,71 @@ class AuthController extends Controller
                 'type' => 'bearer',
             ]
         ]);
+    }
+
+    public function forgetPass(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email'    => 'required|email|exists:users',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
+
+        $token = rand(999, 10000);
+
+        PasswordResset::insert([
+            'email' => $request->email,
+            'token' => $token
+        ]);
+
+        return response()->json([
+            'success' => 1,
+            'otp' => $token
+        ], 200);
+    }
+
+    public function resetPass(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|exists:users',
+            'otp' => 'required|digits:4',
+            'password' => 'required|string|min:6|confirmed',
+            'password_confirmation' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => 0,
+                'message' => $validator->errors()
+            ], 400);
+        }
+
+        $updatePassword = PasswordResset::where([
+            'email' => $request->email,
+            'token' => $request->otp
+        ])
+            ->first();
+
+        if (!$updatePassword) {
+            return response()->json([
+                'success' => 0,
+                'message' => 'Failed, Invalid otp!'
+            ], 400);
+        }
+
+        $user = User::where('email', $request->email)
+            ->update(['password' => Hash::make($request->password)]);
+
+        PasswordResset::where(['email' => $request->email])->delete();
+
+
+        return response()->json([
+            'success' => 1,
+            'message' => 'Your password has been changed!'
+        ], 200);
     }
 
     public function logout()

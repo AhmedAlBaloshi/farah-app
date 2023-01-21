@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\ProductTimeSlot;
 use App\Models\SubService;
 use App\OrderDetail;
 use DateTime;
@@ -96,28 +97,25 @@ class SubServiceController extends Controller
     public function show($id)
     {
         $service  = SubService::select(DB::raw('sub_service.*, product.product_image,  product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
-            ->with(['banner', 'availabilities' => function ($q) {
-                return $q->with('timeSlots');
-            }, 'images'])
+            ->with(['banner', 'images'])
             ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id')
             ->leftJoin('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
             ->where('sub_service.sub_service_id', $id)
             ->groupBy('sub_service.sub_service_id')
             ->first();
 
-        foreach ($service->availabilities as $avail) {
-            foreach ($avail->timeSlots as $key => $slot) {
-                $booked = OrderDetail::where('booking_date', $avail->date)
-                    ->where('booking_start_time', $slot->start_time)
-                    ->where('booking_end_time', $slot->end_time)
-                    ->get();
-                if (count($booked) > 0) {
-                    $slot->is_booked = true;
-                } else {
-                    $slot->is_booked = false;
-                }
-            }
-        }
+        //     foreach ($service->timeSlots as $key => $slot) {
+        //         $booked = OrderDetail::where('booking_date', $avail->date)
+        //             ->where('booking_start_time', $slot->start_time)
+        //             ->where('booking_end_time', $slot->end_time)
+        //             ->get();
+        //         if (count($booked) > 0) {
+        //             $slot->is_booked = true;
+        //         } else {
+        //             $slot->is_booked = false;
+        //         }
+        //     }
+        // }
         if ($service) {
             return response()->json([
                 'success' => 1,
@@ -127,6 +125,33 @@ class SubServiceController extends Controller
         return response()->json([
             'success' => 0,
             'message' => 'Failed, sub Service list not found'
+        ], 404);
+    }
+
+    public function getTimeSlots($id, $date)
+    {
+        $slots = ProductTimeSlot::where('sub_service_id', $id)->get();
+
+        foreach ($slots as $key => $slot) {
+            $booked = OrderDetail::where('booking_date', $date)
+                ->where('booking_start_time', $slot->start_time)
+                ->where('booking_end_time', $slot->end_time)
+                ->get();
+            if (count($booked) > 0) {
+                $slot->is_booked = true;
+            } else {
+                $slot->is_booked = false;
+            }
+        }
+        if ($slots) {
+            return response()->json([
+                'success' => 1,
+                'time_slots' => $slots
+            ], 200);
+        }
+        return response()->json([
+            'success' => 0,
+            'message' => 'Failed, Time slots not found'
         ], 404);
     }
 

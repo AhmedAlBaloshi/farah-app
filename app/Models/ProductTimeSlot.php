@@ -12,24 +12,31 @@ class ProductTimeSlot extends Model
     public $timestamps    = true;
 
     protected $fillable = [
-        'product_availability_id',
+        // 'product_availability_id',
+        'sub_service_id',
         'start_time',
         'end_time',
         'created_at',
         'updated_at'
     ];
+    protected $hidden = ['product_availability_id'];
 
     public function productAvailability()
     {
         return $this->belongsTo("App\Models\ProductAvailability", "product_availability_id", "product_availability_id");
     }
 
+    public function subService()
+    {
+        return $this->belongsTo("App\Models\SubService", "sub_service_id", "sub_service_id");
+    }
+
     public static function add($param = [])
     {
         if ($param) {
-            foreach (self::getTimeSlot(30, $param['start_time'], $param['end_time']) as $ts) {
+            foreach (self::getTimeSlot($param['minutes'], $param['start_time'], $param['end_time']) as $ts) {
                 self::create([
-                    'product_availability_id' => $param['product_availability_id'],
+                    'sub_service_id' => $param['sub_service_id'],
                     'start_time' => $ts['start_time'],
                     'end_time' => $ts['end_time'],
                 ]);
@@ -37,16 +44,17 @@ class ProductTimeSlot extends Model
         }
     }
 
-    public static function updateRecords($params = [], $oldAvailId, $newAvailId)
+    public static function updateRecords($params = [], $sub_service_id)
     {
         if (!empty($params)) {
-            self::where('product_availability_id', $oldAvailId)
+            self::where('sub_service_id', $sub_service_id)
                 ->delete();
-            foreach ($params as $key => $param) {
+
+            foreach (self::getTimeSlot($params['minutes'], $params['start_time'], $params['end_time']) as $ts) {
                 self::create([
-                    'product_availability_id' => $newAvailId,
-                    'start_time'       => $param['start_time'],
-                    'end_time'       => $param['end_time'],
+                    'sub_service_id' => $sub_service_id,
+                    'start_time'       => $ts['start_time'],
+                    'end_time'       => $ts['end_time'],
                 ]);
             }
         }
