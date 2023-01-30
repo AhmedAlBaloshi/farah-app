@@ -27,8 +27,10 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $product = Product::get();
-        return view('product.list',compact('product'));
+        $product = Product::with(['offers' => function ($q) {
+            return $q->where('end_date', '>=', date('Y-m-d'));
+        }])->get();
+        return view('product.list', compact('product'));
     }
 
     /**
@@ -38,15 +40,17 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $service  = \App\Models\Service::pluck('service_name','service_id')->toArray();
-        $categoryList = \App\Models\Category::pluck('category_name','category_id')->toArray();
-     
-        return view('product.form',compact(['service','categoryList']));
+        $service  = \App\Models\Service::pluck('service_name', 'service_id')->toArray();
+        $subService  = \App\Models\SubService::pluck('sub_service_name', 'sub_service_id')->toArray();
+        $serviceList  = \App\Models\ServiceList::pluck('service_name', 'service_list_id')->toArray();
+        $categoryList = \App\Models\Category::pluck('category_name', 'category_id')->toArray();
+
+        return view('product.form', compact(['service', 'categoryList', 'subService', 'serviceList']));
     }
 
     public function store(Request $request)
     {
-        $this->validate($request,[
+        $this->validate($request, [
             'product_name'      => 'required',
             'product_name_ar'   => 'required',
             'address'           => 'required',
@@ -58,16 +62,17 @@ class ProductController extends Controller
             'rate'              => 'required',
             'service_id'        => 'required',
             'service_list_id'   => 'required',
+            'sub_service_id'   => 'unique:product',
             'items.*.date'      => 'required',
             'items.*.time'      => 'required'
-        ],[
+        ], [
             'items.*.date.required' => 'date field is required',
             'items.*.time.required' => 'time field is required'
         ]);
 
         Product::add($request->all());
 
-        return redirect()->route('product_index')->with('success','Product created successfully.');
+        return redirect()->route('product_index')->with('success', 'Product created successfully.');
     }
 
     /**
@@ -77,22 +82,23 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    {   
+    {
         $product = $service = $serviceList = [];
-        
+
         if ((int)$id > 0) {
             $product         = Product::find($id);
-            $service         = \App\Models\Service::pluck('service_name','service_id')->toArray();
-            $serviceList     = \App\Models\ServiceList::where('service_list_id',$product->service_list_id)->pluck('service_name','service_list_id')->toArray();
-            $subServiceList  = \App\Models\SubService::where('sub_service_id',$product->sub_service_id)->pluck('sub_service_name','sub_service_id')->toArray();
+            $service  = \App\Models\Service::pluck('service_name', 'service_id')->toArray();
+            $subService  = \App\Models\SubService::pluck('sub_service_name', 'sub_service_id')->toArray();
+            $serviceList  = \App\Models\ServiceList::pluck('service_name', 'service_list_id')->toArray();
+            $categoryList = \App\Models\Category::pluck('category_name', 'category_id')->toArray();
         }
-        
-        return view('product.form',compact(['product','service','serviceList','subServiceList']));
+
+        return view('product.form', compact(['product', 'service', 'categoryList', 'subService', 'serviceList']));
     }
 
     public function update(Request $request, $id)
     {
-        $this->validate($request,[
+        $this->validate($request, [
             'product_name'      => 'required',
             'product_name_ar'   => 'required',
             'address'           => 'required',
@@ -101,14 +107,15 @@ class ProductController extends Controller
             'longitude'         => 'required',
             'description'       => 'required',
             'description_ar'    => 'required',
+            'sub_service_id'   => 'unique:product',
             'rate'              => 'required',
             'service_list_id'   => 'required',
             'service_id'        => 'required'
         ]);
 
-        Product::updateRecords($id,$request->all());
+        Product::updateRecords($id, $request->all());
 
-        return redirect()->route('product_index')->with('success','Product updated successfully.');
+        return redirect()->route('product_index')->with('success', 'Product updated successfully.');
     }
 
     /**
@@ -120,21 +127,22 @@ class ProductController extends Controller
     public function destroy($id)
     {
         if ((int)$id > 0) {
-            
+
             // ProductAvailability::where('product_id',$id)->delete();
-            Product::where('product_id',$id)->delete();
-            
-            return Response::json(["code" => 200,
+            Product::where('product_id', $id)->delete();
+
+            return Response::json([
+                "code" => 200,
                 "response_status" => "success",
                 "message"         => "Record deleted successfully",
                 "data"            => []
             ]);
         }
-        
-        return Response::json(["code" => 500, 
+
+        return Response::json([
+            "code" => 500,
             "response_status" => "error",
             "message"         => "Something went wrong"
         ]);
     }
-
 }

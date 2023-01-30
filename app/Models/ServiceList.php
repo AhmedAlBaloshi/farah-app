@@ -34,18 +34,17 @@ class ServiceList extends Model
     public static function add($params = [])
     {
         if (!empty($params)) {
-
             $image = '';
             if (!empty($params['image'])) {
                 $file = $params['image'];
                 $fileName = uniqid() . '-' . $file->getClientOriginalName();
-
+                
                 //Move Uploaded File
                 $destinationPath = 'api/service-list-image';
                 $file->move($destinationPath, $fileName);
                 $image = $fileName;
             }
-
+            
             return self::create([
                 'service_name'     => $params['service_name'],
                 'service_name_ar'  => $params['service_name_ar'],

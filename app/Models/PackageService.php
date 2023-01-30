@@ -26,11 +26,12 @@ class PackageService extends Model
         }
     }
 
-    public static function updateRecords($params = [])
+    public static function updateRecords($id,$params = [])
     {
         if (!empty($params)) {
+            PackageService::where('package_id', $id)->delete();
             foreach ($params as $key => $param) {
-                PackageService::where('package_id', $param['package_id'])->delete();
+
                 self::create([
                     'package_id' => $param['package_id'],
                     'product_id' => $param['product_id'],

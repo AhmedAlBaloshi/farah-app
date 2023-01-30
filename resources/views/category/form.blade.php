@@ -70,13 +70,10 @@
                                     <input type="file" name="image" class="custom-file-input" id="exampleInputFile">
                                     <label class="custom-file-label" for="exampleInputFile">Choose file</label>
                                 </div>
-                                <div class="input-group-append">
-                                    <span class="input-group-text" id="">Upload</span>
-                                </div>
                                 {!! $errors->first('image', '<p class="help-block">:message</p>') !!}
                             </div>
                             @if (!empty($category->image))
-                                <img src="/category-image/{{ $category->image }}" width="50" height="30">
+                                <img src="{{ asset('api/category-image/' . $category->image)}}" width="50" height="30">
                             @endif
                         </div>
                     </div>

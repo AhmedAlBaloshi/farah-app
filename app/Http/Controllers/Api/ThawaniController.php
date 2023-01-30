@@ -34,7 +34,7 @@ class ThawaniController extends Controller
         // dd(['tax' => $tax, 'disc' => $discount]);
         $data['products'] = $item;
         $data['customer_id'] = '';
-        $data['success_url'] = url('api/thawani-pay/success/' . $order_id . '?tax=' . ($tax * 1000) . '&discount=' . ($discount * 1000));
+        $data['success_url'] = url('api/thawani-pay/success/' . $order_id . '?tax=' . $tax . '&discount=' . $discount);
         $data['cancel_url'] = url('api/thawani-pay/cancel', $order_id);
         $data['save_card_on_success'] = false;
 

@@ -57,6 +57,12 @@ class BannerController extends Controller
         $validator = Validator::make($request->all(), [
             'image' => 'required'
         ]);
+        if (!$request->sub_service_id && !$request->product_id) {
+            return response()->json([
+                'success' => 0,
+                'message' => 'product_id or sub_service_id will require.'
+            ], 400);
+        }
 
         if ($validator->fails()) {
             return response()->json([
@@ -130,6 +136,12 @@ class BannerController extends Controller
         $validator = Validator::make($request->all(), [
             'image' => 'required'
         ]);
+        if (!$request->sub_service_id && !$request->product_id) {
+            return response()->json([
+                'success' => 0,
+                'message' => 'product_id or sub_service_id will require.'
+            ], 400);
+        }
 
         if ($validator->fails()) {
             return response()->json([

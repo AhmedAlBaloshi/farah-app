@@ -89,7 +89,7 @@ class Package extends Model
             if ($package) {
                 $package->title = $params['title'];
                 $package->detail   = $params['detail'];
-                $package->image   = $image;
+                $package->image   = $image == '' ? $package->image : $image;
                 $package->amount   = $params['amount'];
                 $package->start_date = $params['start_date'];
                 $package->start_time = $params['start_time'];
@@ -108,9 +108,10 @@ class Package extends Model
                         'service_id' => isset($item['service_id']) ? $item['service_id'] : null,
                     ];
                 }
-                $pkgService = PackageService::updateRecords($packageServiceParams);
+                // dd($packageServiceParams);
+                $pkgService = PackageService::updateRecords($package->id,$packageServiceParams);
             }
-            return $pkgService;
+            return $package;
         }
     }
 }

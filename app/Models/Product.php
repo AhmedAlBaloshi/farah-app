@@ -39,7 +39,7 @@ class Product extends Model
 
     public function offers()
     {
-        return $this->hasMany(Offer::class);
+        return $this->hasMany(Offer::class,'product_id','product_id');
     }
     public function banner()
     {
@@ -58,7 +58,7 @@ class Product extends Model
 
     public function subServiceList()
     {
-        return $this->hasOne("App\Models\SubService", "sub_service_id");
+        return $this->hasOne("App\Models\SubService", "sub_service_id",'sub_service_id');
     }
 
     public function packages()

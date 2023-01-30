@@ -21,8 +21,7 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Order::select('orders.*','order_details.delivery_status')->latest()
-            ->join('order_details', 'order_details.order_id', '=', 'orders.id')
+        $query = Order::select('orders.*')->latest()
             ->join('order_product', 'order_product.order_id', '=', 'orders.id');
 
         if ($request->user_id)
@@ -114,24 +113,25 @@ class OrderController extends Controller
         $order->save();
 
         foreach ($request->items as $item) {
-            $detail = new OrderDetail();
-            $detail->order_id = $order->id;
-            $detail->price = $item['amount'];
-            $order->tax = $item['taxes'];
+            if (isset($item['service_id']) && !empty($item['service_id'])) {
+                $detail = new OrderDetail();
+                $detail->order_id = $order->id;
+                $detail->price = $item['amount'];
+                $detail->tax = $item['taxes'];
 
-            if (isset($item['product_id']) && !empty($item['product_id'])) {
-                $detail->product_id = $item['product_id'];
-                $detail->quantity = $item['total_quantities'];
-            } else {
+                // if (isset($item['product_id']) && !empty($item['product_id'])) {
+                //     $detail->product_id = $item['product_id'];
+                //     $detail->quantity = $item['total_quantities'];
+                // } else {
                 $detail->service_id = $item['service_id'];
                 $detail->booking_date = $item['book_date'];
                 $detail->booking_start_time = $item['start_time'];
                 $detail->booking_end_time = $item['end_time'];
+                // }
+
+                $detail->payment_status = $item['payment_status'];
+                $detail->save();
             }
-
-            $detail->payment_status = $item['payment_status'];
-            $detail->save();
-
             if (isset($item['product_id']) && !empty($item['product_id'])) {
                 $orderProduct = new OrderProduct();
                 $orderProduct->product_id = $item['product_id'];
@@ -139,7 +139,7 @@ class OrderController extends Controller
                 $orderProduct->quantity = $item['quantity'];
                 $orderProduct->amount = $item['price'];
                 $orderProduct->timestamps = false;
-                
+
                 $orderProduct->save();
             }
             if (isset($item['service_id']) && !empty($item['service_id'])) {
@@ -189,7 +189,7 @@ class OrderController extends Controller
             ->join('users as U', 'U.id', '=', 'orders.user_id')
             ->leftJoin('product as P', 'P.product_id', '=', 'OD.product_id')
             ->leftJoin('order_book_time_slot as TS', 'TS.order_id', '=', 'orders.id')
-            ->leftJoin('sub_service as SS', 'SS.sub_service_id', '=', 'OD.service_id')
+            ->leftJoin('sub_service as SS', 'SS.sub_service_id', '=', 'TS.service_id')
             ->leftJoin('product as SP', 'SP.sub_service_id', '=', 'SS.sub_service_id')
             ->leftJoin('order_product as OP', 'OP.order_id', '=', 'orders.id')
             ->leftJoin('users as S', 'S.id', '=', 'OD.seller_id')

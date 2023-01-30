@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
-Route::group(['middleware'=>'auth'], function(){
+Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/', function () {
         return view('dashboard');
@@ -60,6 +60,42 @@ Route::group(['middleware'=>'auth'], function(){
         Route::patch('{id}/update', ['as' => 'category_update', 'uses' => 'CategoryController@update']);
         Route::post('delete/{id}', ['as' => 'category_delete', 'uses' => 'CategoryController@destroy']);
     });
+
+    // Banner Routes
+    Route::get('users', 'UserController@index')->name('users.index');
+    Route::get('users/create', 'UserController@create')->name('users.create');
+    Route::post('users', 'UserController@store')->name('users.store');
+    Route::get('users/{id}', 'UserController@edit')->name('users.edit');
+    Route::put('users/{id}', 'UserController@update')->name('users.update');
+    Route::post('users/{id}', 'UserController@destroy')->name('users.destroy');
+
+    // Orders Route
+    Route::get('orders', 'OrderController@orders')->name('orders.index');
+    Route::get('orders/{id}', 'OrderController@view')->name('orders.show');
+    Route::post('orders/status/{id}', 'OrderController@updateStatus')->name('orders.update-status');
+
+    // Bookings Route
+    Route::get('bookings', 'BookingController@bookings')->name('bookings.index');
+    Route::get('bookings/{id}', 'BookingController@view')->name('bookings.show');
+
+    // Offer Routes
+    Route::resource('offers', 'OfferController');
+
+    // Pacakage Routes
+    Route::resource('packages', 'PackageController');
+
+    // Banner Routes
+    Route::resource('banners', 'BannerController');
+
+    // Feedback Routes
+    Route::get('feedbacks', 'FeedbackController@index')->name('feedback.index');
+    // About Routes
+    Route::get('about-us', 'AboutUsController@index')->name('about.index');
+    Route::put('about-us/{id}', 'AboutUsController@update')->name('about.update');
+
+    // term of services Routes
+    Route::get('term-of-services', 'TermServiceController@index')->name('term.index');
+    Route::put('term-of-services/{id}', 'TermServiceController@update')->name('term.update');
 
     // Product Routes
     Route::group(['prefix' => 'product'], function () {

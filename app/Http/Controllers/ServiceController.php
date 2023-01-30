@@ -44,7 +44,8 @@ class ServiceController extends Controller
         $this->validate($request,[
             'service_name'       => 'required',
             'service_name_ar'    => 'required',
-            'image'              => 'required'
+            'image'              => 'required',
+            'icon'              => 'required'
         ]);
 
         Service::add($request->all());

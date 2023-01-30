@@ -53,6 +53,14 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
+    public function orders(){
+        return $this->hasMany(Order::class,'user_id');
+    }
+    
+    public function guestOrders(){
+        return $this->hasMany(Order::class,'guest_id');
+    }
+
     public function feedback()
     {
         return $this->hasMany(Feedback::class);
@@ -99,7 +107,7 @@ class User extends Authenticatable implements JWTSubject
                 $user->lastname = isset($params['lastname']) ? $params['lastname'] : null;
                 $user->mobile_no = isset($params['mobile_no']) ? $params['mobile_no'] : null;
                 $user->email = $params['email'];
-                $user->profile_image = $image;
+                $user->profile_image = $image == '' ? $user->profile_image : $image;
                 $user->role_id = isset($params['role_id']) ? $params['role_id'] : 2;
                 $user->address = isset($params['address']) ? $params['address'] : null;
                 $user->comission = isset($params['comission']) ? $params['comission'] : null;
