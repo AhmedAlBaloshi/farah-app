@@ -39,7 +39,7 @@ class Product extends Model
 
     public function offers()
     {
-        return $this->hasMany(Offer::class,'product_id','product_id');
+        return $this->hasMany(Offer::class, 'product_id', 'product_id');
     }
     public function banner()
     {
@@ -58,7 +58,7 @@ class Product extends Model
 
     public function subServiceList()
     {
-        return $this->hasOne("App\Models\SubService", "sub_service_id",'sub_service_id');
+        return $this->hasOne("App\Models\SubService", "sub_service_id", 'sub_service_id');
     }
 
     public function packages()
@@ -79,24 +79,9 @@ class Product extends Model
                 $file->move($destinationPath, $fileName);
                 $image = $fileName;
             }
-
-            return self::create([
-                'product_name'      => $params['product_name'],
-                'product_name_ar'   => $params['product_name_ar'],
-                'address'           => $params['address'],
-                'address_ar'        => $params['address_ar'],
-                'latitude'          => $params['latitude'],
-                'longitude'         => $params['longitude'],
-                'product_image'     => $image,
-                'description'       => $params['description'],
-                'category_id'       => $params['category_id'],
-                'description_ar'    => $params['description_ar'],
-                'rate'              => $params['rate'],
-                'is_active'         => !empty($params['is_active']) ? 1 : 0,
-                'service_list_id'   => $params['service_list_id'],
-                'sub_service_id'    => $params['sub_service_id'],
-                'service_id'        => $params['service_id']
-            ]);
+            $params['product_image'] = $image;
+            $params['is_active'] = !empty($params['is_active']) ? 1 : 0;
+            return self::create($params);
         }
     }
 
@@ -119,10 +104,6 @@ class Product extends Model
             if ($product) {
                 $product->product_name      = $params['product_name'];
                 $product->product_name_ar   = $params['product_name_ar'];
-                $product->address           = $params['address'];
-                $product->address_ar        = $params['address_ar'];
-                $product->latitude          = $params['latitude'];
-                $product->longitude         = $params['longitude'];
                 $product->description       = $params['description'];
                 $product->category_id       = $params['category_id'];
                 if (!empty($image)) {
@@ -131,9 +112,6 @@ class Product extends Model
                 $product->description_ar    = $params['description_ar'];
                 $product->rate              = $params['rate'];
                 $product->is_active         = !empty($params['is_active']) ? 1 : 0;
-                $product->service_list_id   = $params['service_list_id'];
-                $product->sub_service_id    = $params['sub_service_id'];
-                $product->service_id        = $params['service_id'];
                 $product->update();
             }
 

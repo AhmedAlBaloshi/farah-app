@@ -29,7 +29,7 @@ class OrderController extends Controller
         if ($request->customer_id)
             $query->where('guest_id', $request->customer_id);
 
-        $orders = $query->groupBy('orders.id')->get();
+        $orders = $query->where('user_id', auth()->user()->id)->orWhere('guest_id', auth()->user()->id)->groupBy('orders.id')->get();
 
         if ($orders) {
             return response()->json([

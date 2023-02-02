@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
+use App\Models\ProductImage;
 use App\Models\ProductTimeSlot;
 use Illuminate\Http\Request;
 use App\Models\SubService;
@@ -27,9 +29,9 @@ class SubServiceController extends Controller
      */
     public function index()
     {
-        $subService = SubService::select(DB::raw('sub_service.*, product.product_id,product.product_image,  product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
+        $subService = SubService::select(DB::raw('sub_service.*, product.product_id,product.product_image,  product.discount,product.address, product.address_ar, product.rate as amount, AVG(product_rating.rating) as rating'))
             ->with('banner')
-            ->leftJoin('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
+            ->join('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
             ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id')->latest('sub_service.created_at')
             ->groupBy('sub_service.sub_service_id')
             ->get();
@@ -44,8 +46,10 @@ class SubServiceController extends Controller
      */
     public function create()
     {
+
+        $products = Product::select('product_name', 'product_id')->get();
         $service = \App\Models\ServiceList::pluck('service_name', 'service_list_id')->toArray();
-        return view('sub-service.form', compact('service'));
+        return view('sub-service.form', compact('service', 'products'));
     }
 
     public function store(Request $request)
@@ -54,6 +58,10 @@ class SubServiceController extends Controller
             'sub_service_name'    => 'required',
             'sub_service_name_ar' => 'required',
             'service_list_id'     => 'required',
+            'image' => 'required',
+            'address' => 'required',
+            'address_ar' => 'required',
+            'amount' => 'required|integer',
             'detail'     => 'required',
         ]);
 
@@ -73,7 +81,11 @@ class SubServiceController extends Controller
         $service = \App\Models\ServiceList::pluck('service_name', 'service_list_id')->toArray();
         $subService = [];
         if ((int)$id > 0) {
-            $subService  = SubService::find($id);
+            $subService  = SubService::select('sub_service.*', 'product.product_id', 'product.rate as amount', 'product.product_image as image', 'product.address', 'product.address_ar')
+                ->join('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')->groupBy('sub_service.sub_service_id')->where('sub_service.sub_service_id', $id)->first();
+
+            $serviceImage = ProductImage::where('sub_service_id', $id)->get();
+            $subService['images'] = $serviceImage;
         }
         return view('sub-service.form', compact(['service', 'subService']));
     }
@@ -81,9 +93,13 @@ class SubServiceController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'sub_service_name'       => 'required',
-            'sub_service_name_ar'    => 'required',
-            'service_list_id'         => 'required'
+            'sub_service_name'    => 'required',
+            'sub_service_name_ar' => 'required',
+            'service_list_id'     => 'required',
+            'address' => 'required',
+            'address_ar' => 'required',
+            'amount' => 'required|integer',
+            'detail'     => 'required',
         ]);
 
         SubService::updateRecords($id, $request->all());
@@ -103,6 +119,7 @@ class SubServiceController extends Controller
 
             ProductTimeSlot::where('sub_service_id', $id)
                 ->delete();
+            Product::where('sub_service_id', $id)->delete();
             SubService::where('sub_service_id', $id)->delete();
             return Response::json([
                 "code" => 200,

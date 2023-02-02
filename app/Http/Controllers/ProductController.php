@@ -29,7 +29,7 @@ class ProductController extends Controller
     {
         $product = Product::with(['offers' => function ($q) {
             return $q->where('end_date', '>=', date('Y-m-d'));
-        }])->get();
+        }])->where('sub_service_id',null)->get();
         return view('product.list', compact('product'));
     }
 
@@ -53,21 +53,18 @@ class ProductController extends Controller
         $this->validate($request, [
             'product_name'      => 'required',
             'product_name_ar'   => 'required',
-            'address'           => 'required',
-            'address_ar'        => 'required',
-            'latitude'          => 'required',
-            'longitude'         => 'required',
+            'category_id'   => 'required',
+            // 'address'           => 'required',
+            // 'address_ar'        => 'required',
+            // 'latitude'          => 'required',
+            // 'longitude'         => 'required',
             'description'       => 'required',
+            'image'       => 'required',
             'description_ar'    => 'required',
-            'rate'              => 'required',
-            'service_id'        => 'required',
-            'service_list_id'   => 'required',
-            'sub_service_id'   => 'unique:product',
-            'items.*.date'      => 'required',
-            'items.*.time'      => 'required'
-        ], [
-            'items.*.date.required' => 'date field is required',
-            'items.*.time.required' => 'time field is required'
+            'rate'              => 'required|integer',
+            // 'service_id'        => 'required',
+            // 'service_list_id'   => 'required',
+            // 'sub_service_id'   => 'unique:product',
         ]);
 
         Product::add($request->all());
@@ -101,16 +98,10 @@ class ProductController extends Controller
         $this->validate($request, [
             'product_name'      => 'required',
             'product_name_ar'   => 'required',
-            'address'           => 'required',
-            'address_ar'        => 'required',
-            'latitude'          => 'required',
-            'longitude'         => 'required',
+            'category_id'   => 'required',
             'description'       => 'required',
             'description_ar'    => 'required',
-            'sub_service_id'   => 'unique:product',
-            'rate'              => 'required',
-            'service_list_id'   => 'required',
-            'service_id'        => 'required'
+            'rate'              => 'required|integer',
         ]);
 
         Product::updateRecords($id, $request->all());

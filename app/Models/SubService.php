@@ -74,21 +74,26 @@ class SubService extends Model
                 'is_active'     => !empty($params['is_active']) ? 1 : 0,
             ]);
 
-            // add records in product availability
-            // if (!empty($params['available'])) {
-            //     $availabilityParams = [];
-            //     foreach ($params['available'] as $key => $item) {
-            //         $availabilityParams[] = [
-            //             'sub_service_id' => $sub_service->sub_service_id,
-            //             'date'       => $item['date'],
-            //             'time'       => $item['time'],
-            //             'is_active'  => !empty($item['is_active']) ? 1 : 0,
-            //             'start_time' =>  $item['start_time'],
-            //             'end_time' =>  $item['end_time']
-            //         ];
-            //     }
-            //     ProductAvailability::add($availabilityParams);
-            // }
+            $image = '';
+            if (!empty($params['image'])) {
+                $file = $params['image'];
+                $fileName = uniqid() . '-' . $file->getClientOriginalName();
+
+                //Move Uploaded File
+                $destinationPath = 'api/sub-service-image';
+                $file->move($destinationPath, $fileName);
+                $image = $fileName;
+            }
+
+            // Product Create
+            Product::create([
+                'sub_service_id' => $sub_service->sub_service_id,
+                'product_image' => $image,
+                'address' => $params['address'],
+                'address_ar' => $params['address_ar'],
+                'rate' => $params['amount'],
+            ]);
+
             // Add record in time slot
             $params['time_slot'] = [
                 'minutes' => $params['minutes'],
@@ -97,17 +102,17 @@ class SubService extends Model
                 'end_time' => $params['end_time']
             ];
             ProductTimeSlot::add($params['time_slot']);
-            // if (!empty($params['sub_service_image'])) {
-
-            //     $subServiceImageParams = [];
-            //     foreach ($params['sub_service_image'] as $key => $item) {
-            //         $subServiceImageParams[] = [
-            //             'sub_service_id' => $sub_service->sub_service_id,
-            //             'image'       => $item['image'],
-            //         ];
-            //     }
-            //     ProductImage::add($subServiceImageParams);
-            // }
+            if (!empty($params['sub_service_image'])) {
+                
+                $subServiceImageParams = [];
+                foreach ($params['sub_service_image'] as $key => $item) {
+                    $subServiceImageParams[] = [
+                        'sub_service_id' => $sub_service->sub_service_id,
+                        'image'       => $item['image'],
+                    ];
+                }
+                ProductImage::add($subServiceImageParams);
+            }
             return $sub_service;
         }
     }
@@ -127,6 +132,27 @@ class SubService extends Model
                 $sub_service->end_time     = $params['end_time'];
                 $sub_service->is_active       = !empty($params['is_active']) ? 1 : 0;
                 $sub_service->save();
+
+                $image = '';
+                if (!empty($params['image'])) {
+                    $file = $params['image'];
+                    $fileName = uniqid() . '-' . $file->getClientOriginalName();
+
+                    //Move Uploaded File
+                    $destinationPath = 'api/sub-service-image';
+                    $file->move($destinationPath, $fileName);
+                    $image = $fileName;
+                }
+                // Product Create
+                $product = Product::findOrFail($params['product_id']);
+                $product->sub_service_id = $sub_service->sub_service_id;
+                if (!empty($image)) {
+                    $product->product_image = $image;
+                }
+                $product->address = $params['address'];
+                $product->address_ar = $params['address_ar'];
+                $product->rate = $params['amount'];
+                $product->update();
 
                 // // add records in product availability
                 // if (!empty($params['available'])) {
@@ -157,14 +183,7 @@ class SubService extends Model
                 }
 
                 if (!empty($params['sub_service_image'])) {
-
-                    $subServiceImageParams = [];
-                    foreach ($params['sub_service_image'] as $key => $item) {
-                        $subServiceImageParams[] = [
-                            'image'       => $item['image'],
-                        ];
-                    }
-                    ProductImage::updateRecords($subServiceImageParams, $sub_service->sub_service_id);
+                    ProductImage::updateRecords($params['sub_service_image'], $sub_service->sub_service_id);
                 }
                 return $sub_service;
             }

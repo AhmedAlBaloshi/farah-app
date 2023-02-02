@@ -18,16 +18,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $query = Product::with('service', 'serviceList', 'subServiceList', 'banner');
-        if ($request->service_id) {
-            $query->where('service_id', $request->service_id);
-        }
-        if ($request->service_list_id) {
-            $query->where('service_list_id', $request->service_list_id);
-        }
-        if ($request->sub_service_id) {
-            $query->where('sub_service_id', $request->sub_service_id);
-        }
-        if ($request->category_id) {
+         if ($request->category_id) {
             if ($request->category_id == 'all') {
                 $query->where('category_id', '!=', null)
                     ->where('category_id', '>', 0);
@@ -45,7 +36,7 @@ class ProductController extends Controller
                 $query->orderBy('product_id', 'desc');
         }
 
-        $products = $query->paginate(10);
+        $products = $query->where('sub_service_id', null)->where('is_active', 1)->paginate(10);
         if ($products) {
             return response()->json([
                 'success' => 1,
@@ -127,8 +118,8 @@ class ProductController extends Controller
     {
         $product = Product::select(DB::raw('product.*,AVG(product_rating.rating) as rating'))
             ->with('banner')
-            ->rightJoin('product_rating', 'product_rating.product_id', '=', 'product.product_id')
-            ->where('product.product_id', $id)->first();
+            ->leftJoin('product_rating', 'product_rating.product_id', '=', 'product.product_id')
+            ->where('product.product_id', $id)->where('is_active', 1)->first();
 
         if ($product) {
             return response()->json([

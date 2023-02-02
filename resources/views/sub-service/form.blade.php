@@ -73,6 +73,20 @@
                                 {!! $errors->first('sub_service_name_ar', '<p class="help-block">:message</p>') !!}
                             </div>
                         </div>
+                        <div class="form-group row {{ $errors->has('image') ? 'has-error' : '' }}">
+                            <label for="exampleInputFile" class="col-sm-3 col-form-label">Image</label>
+                            <div class="input-group col-sm-6">
+                                <div class="custom-file">
+                                    <input type="file" name="image" class="custom-file-input" id="exampleInputFile">
+                                    <label class="custom-file-label" for="exampleInputFile">Choose file</label>
+                                </div>
+                                {!! $errors->first('image', '<p class="help-block">:message</p>') !!}
+                            </div>
+                            @if (!empty($subService->image))
+                                <img src="{{ asset('api/sub-service-image/' . $subService->image) }}" width="80"
+                                    height="50">
+                            @endif
+                        </div>
                         <div class="form-group row {{ $errors->has('detail') ? 'has-error' : '' }}">
                             <label for="detail" class="col-sm-3 col-form-label">Detail</label>
                             <div class="col-sm-6">
@@ -85,10 +99,36 @@
                                 {!! $errors->first('detail', '<p class="help-block">:message</p>') !!}
                             </div>
                         </div>
+                        <div class="form-group row {{ $errors->has('address') ? 'has-error' : '' }}">
+                            <label for="productAddress" class="col-sm-3 col-form-label">English Address</label>
+                            <div class="col-sm-6">
+                                {!! Form::text('address', null, [
+                                    'class' => 'form-control',
+                                    'id' => 'productAddress',
+                                    'placeholder' => 'English Address',
+                                ]) !!}
+                                {!! $errors->first('address', '<p class="help-block">:message</p>') !!}
+                            </div>
+                        </div>
+                        <div class="form-group row {{ $errors->has('address_ar') ? 'has-error' : '' }}">
+                            <label for="productAddressAr" class="col-sm-3 col-form-label">Arabic Address</label>
+                            <div class="col-sm-6">
+                                {!! Form::text('address_ar', null, [
+                                    'class' => 'form-control',
+                                    'id' => 'productAddressAr',
+                                    'placeholder' => 'Arabic Address',
+                                ]) !!}
+                                {!! Form::hidden('product_id', null, [
+                                    'placeholder' => 'Arabic Address',
+                                ]) !!}
+
+                                {!! $errors->first('address_ar', '<p class="help-block">:message</p>') !!}
+                            </div>
+                        </div>
                         <div class="form-group row {{ $errors->has('start_time') ? 'has-error' : '' }}">
                             <label for="start-time" class="col-sm-3 col-form-label">Start Time</label>
                             <div class="col-sm-6">
-                                    {!! Form::time('start_time', null, [
+                                {!! Form::time('start_time', null, [
                                     'class' => 'form-control',
                                     'id' => 'start-time',
                                     'value' => '00:00',
@@ -100,7 +140,7 @@
                         <div class="form-group row {{ $errors->has('end_time') ? 'has-error' : '' }}">
                             <label for="end-time" class="col-sm-3 col-form-label">End Time</label>
                             <div class="col-sm-6">
-                                    {!! Form::time('end_time', null, [
+                                {!! Form::time('end_time', null, [
                                     'class' => 'form-control',
                                     'id' => 'end-time',
                                     'value' => '00:00',
@@ -122,6 +162,13 @@
                                 {!! $errors->first('minutes', '<p class="help-block">:message</p>') !!}
                             </div>
                         </div>
+                        <div class="form-group row {{ $errors->has('amount') ? 'has-error' : '' }}">
+                            <label for="amount" class="col-sm-3 col-form-label">Amount</label>
+                            <div class="col-sm-6">
+                                {!! Form::text('amount', null, ['class' => 'form-control', 'id' => 'amount', 'placeholder' => 'Amount']) !!}
+                                {!! $errors->first('amount', '<p class="help-block">:message</p>') !!}
+                            </div>
+                        </div>
 
                         <div class="form-group row {{ $errors->has('is_active') ? 'has-error' : '' }}">
                             <label for="is_active" class="col-sm-3 col-form-label">Active</label>
@@ -133,33 +180,53 @@
                             </div>
                         </div>
                     </div>
+
+
+                    @include('sub-service.addmore')
+                    <!-- /.card-body -->
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                    </form>
                 </div>
-                <!-- /.card-body -->
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
-                </form>
             </div>
         </div>
-    </div>
-    </div>
-    </div>
-@endsection
-@section('script')
-    <script src="{{ asset('plugins/bootstrap-switch/js/bootstrap-switch.min.js') }}"></script>
+    @endsection
+    @section('script')
+        <script src="{{ asset('plugins/bootstrap-switch/js/bootstrap-switch.min.js') }}"></script>
+        <script src="{{ asset('plugins/jquery-fieldsaddmore/jquery.fieldsaddmore.min.js') }}"></script>
+        <script src="{{ asset('plugins/jquery-ui/jquery-ui.min.js') }}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js">
+        </script>
 
-    <script>
-        $(document).ready(function() {
-            $("#module").removeClass("menu-close");
-            $("#module").addClass("menu-open");
-            $("#sub-service-module").addClass("active");
-            $("input[data-bootstrap-switch]").each(function() {
-                $(this).bootstrapSwitch('state', $(this).prop('checked'));
+        <script>
+            $('.admore-custom-fields').fieldsaddmore({
+                templateEle: "#fieldsaddmore-template",
+                rowEle: ".fieldsaddmore-row",
+                addbtn: ".fieldsaddmore-addbtn",
+                removebtn: ".fieldsaddmore-removebtn",
+                min: ($('.fieldsaddmore-row').length > 0) ? 0 : 1,
+                callbackBeforeInit: function(ele, options) {},
+                callbackBeforeRemoveClick: function(ele, options) {
+                    options['min'] = 1;
+                },
+                callbackAfterAdd: function() {
+                },
+                callbackAfterRemoveClick: function(ele, options) {}
             });
-            $("#start-time").change(function() {
-                $('#end-time').attr('min', $(this).val())
-            });
-        });
-    </script>
 
-@endsection
+
+            $(document).ready(function() {
+                $("#module").removeClass("menu-close");
+                $("#module").addClass("menu-open");
+                $("#sub-service-module").addClass("active");
+                $("input[data-bootstrap-switch]").each(function() {
+                    $(this).bootstrapSwitch('state', $(this).prop('checked'));
+                });
+                $("#start-time").change(function() {
+                    $('#end-time').attr('min', $(this).val())
+                });
+            });
+        </script>
+
+    @endsection

@@ -36,17 +36,18 @@
                     <a href="{{ route('sub_service_create') }}" class="btn btn-success" style="float: right;">Add New</a>
                 </div>
                 <div class="card-body">
-                    <table class="table table-bordered table-striped" id="service_datatable">
+                    <table class="table table-bordered table-striped w-100" id="service_datatable">
                         <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Service</th>
                                 <th>Sub Service English Name</th>
                                 <th>Sub Service Arabic Name</th>
-                                <th>Product</th>
+                                <th>Image</th>
                                 <th>Start Time</th>
                                 <th>End Time</th>
                                 <th>Difference</th>
+                                <th>Amount</th>
                                 <th>Active</th>
                                 <th>Action</th>
                             </tr>
@@ -65,18 +66,15 @@
                                         <td> {{ $service->sub_service_name }}</td>
                                         <td> {{ $service->sub_service_name_ar }}</td>
                                         <td>
-                                            @if ($service->product_id)
-                                                <a
-                                                    href="{{ route('product_index', ['product_id' => $service->product_id]) }}">
-                                                    #{{ $service->product_id }}
-                                                </a>
-                                            @else
-                                                <span class="text-danger">Please create product for this service</span>
+                                            @if (!empty($service->product_image))
+                                                <img src="{{ asset('api/sub-service-image/' . $service->product_image) }}"
+                                                    width="80" height="60">
                                             @endif
                                         </td>
                                         <td>{{ $service->start_time }}</td>
                                         <td>{{ $service->end_time }}</td>
                                         <td>{{ $service->minutes }} minutes</td>
+                                        <td>{{ number_format($service->amount, 2) }} OMR</td>
                                         <td> {!! !empty($service->is_active)
                                             ? '<span class="badge bg-success">Active</span>'
                                             : '<span class="badge bg-danger">In-active</span>' !!}
@@ -140,12 +138,13 @@
         }
         $(document).ready(function() {
             let table = $('#service_datatable').DataTable({
+                "scrollX": true,
                 "paging": true,
                 "lengthChange": false,
                 "searching": true,
                 "ordering": true,
                 "info": true,
-                "autoWidth": false,
+                "autoWidth": true,
                 columnDefs: [{
                     targets: 3,
                     orderable: false

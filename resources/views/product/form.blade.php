@@ -43,7 +43,7 @@
                     @endif
 
                     <div class="card-body">
-                        <div class="form-group row {{ $errors->has('service_id') ? 'has-error' : '' }}">
+                        {{-- <div class="form-group row {{ $errors->has('service_id') ? 'has-error' : '' }}">
                             <label for="serviceId" class="col-sm-3 col-form-label">Service</label>
                             <div class="col-sm-6">
                                 {!! Form::select('service_id', ['' => '-Select Service-'] + $service, null, [
@@ -76,7 +76,7 @@
                                 ) !!}
                                 {!! $errors->first('sub_service_id', '<p class="help-block">:message</p>') !!}
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="form-group row {{ $errors->has('category_id') ? 'has-error' : '' }}">
                             <label for="categoryId" class="col-sm-3 col-form-label">Category</label>
                             <div class="col-sm-6">
@@ -111,7 +111,7 @@
                                 {!! $errors->first('product_name_ar', '<p class="help-block">:message</p>') !!}
                             </div>
                         </div>
-                        <div class="form-group row {{ $errors->has('address') ? 'has-error' : '' }}">
+                        {{-- <div class="form-group row {{ $errors->has('address') ? 'has-error' : '' }}">
                             <label for="productAddress" class="col-sm-3 col-form-label">English Address</label>
                             <div class="col-sm-6">
                                 {!! Form::text('address', null, [
@@ -132,7 +132,7 @@
                                 ]) !!}
                                 {!! $errors->first('address_ar', '<p class="help-block">:message</p>') !!}
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="form-group row {{ $errors->has('image') ? 'has-error' : '' }}">
                             <label for="exampleInputFile" class="col-sm-3 col-form-label">Image</label>
                             <div class="input-group col-sm-6">
@@ -147,7 +147,7 @@
                                     height="30">
                             @endif
                         </div>
-                        <div class="form-group row {{ $errors->has('latitude') ? 'has-error' : '' }}">
+                        {{-- <div class="form-group row {{ $errors->has('latitude') ? 'has-error' : '' }}">
                             <label for="latitude" class="col-sm-3 col-form-label">Latitude</label>
                             <div class="col-sm-6">
                                 {!! Form::text('latitude', null, ['class' => 'form-control', 'id' => 'latitude', 'placeholder' => 'Latitude']) !!}
@@ -164,7 +164,7 @@
                                 ]) !!}
                                 {!! $errors->first('longitude', '<p class="help-block">:message</p>') !!}
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="form-group row {{ $errors->has('description') ? 'has-error' : '' }}">
                             <label for="description" class="col-sm-3 col-form-label">English Description</label>
                             <div class="col-sm-6">
@@ -225,11 +225,6 @@
 @section('script')
 
     <script src="{{ asset('plugins/bootstrap-switch/js/bootstrap-switch.min.js') }}"></script>
-    <script src="{{ asset('plugins/jquery-fieldsaddmore/jquery.fieldsaddmore.min.js') }}"></script>
-    <script src="{{ asset('plugins/jquery-ui/jquery-ui.min.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js">
-    </script>
-
     <script>
         var SITEURL = '{{ URL::to('') }}';
 
@@ -242,82 +237,6 @@
             $("input[data-bootstrap-switch]").each(function() {
                 $(this).bootstrapSwitch('state', $(this).prop('checked'));
             });
-        });
-
-        $('.admore-custom-fields').fieldsaddmore({
-            templateEle: "#fieldsaddmore-template",
-            rowEle: ".fieldsaddmore-row",
-            addbtn: ".fieldsaddmore-addbtn",
-            removebtn: ".fieldsaddmore-removebtn",
-            min: ($('.fieldsaddmore-row').length > 0) ? 0 : 1,
-            callbackBeforeInit: function(ele, options) {},
-            callbackBeforeRemoveClick: function(ele, options) {
-                options['min'] = 1;
-            },
-            callbackAfterAdd: function() {
-
-                $("input[data-bootstrap-switch]").each(function() {
-                    $(this).bootstrapSwitch('state', $(this).prop('checked'));
-                });
-
-                $('.timepicker').datetimepicker({
-                    format: 'H:i',
-                    datepicker: false
-                });
-
-                $('.datepicker').datetimepicker({
-                    format: 'Y-m-d',
-                    timepicker: false
-                });
-
-
-            },
-            callbackAfterRemoveClick: function(ele, options) {}
-        });
-
-        jQuery(document).on('change', '#serviceId', function() {
-            var url = SITEURL + "/get_service_list";
-            var id = jQuery(this).val();
-            jQuery("select[id='serviceListId']").find("option").not(':first').remove();
-            jQuery("select[id='subServiceId']").find("option").not(':first').remove();
-            if (id != '') {
-                jQuery.ajax({
-                    type: "GET",
-                    url: url,
-                    data: {
-                        service_id: id
-                    },
-                    success: function(data) {
-                        jQuery("select[id='serviceListId']").find("option:not(:first)").remove();
-                        jQuery.each(data, function(key, value) {
-                            jQuery("select[id='serviceListId']").append('<option value="' +
-                                key + '">' + value + '</option>');
-                        });
-                    },
-                });
-            }
-        });
-
-        jQuery(document).on('change', '#serviceListId', function() {
-            var url = SITEURL + "/get_sub_service_list";
-            var id = jQuery(this).val();
-            jQuery("select[id='subServiceId']").find("option").not(':first').remove();
-            if (id != '') {
-                jQuery.ajax({
-                    type: "GET",
-                    url: url,
-                    data: {
-                        service_list_id: id
-                    },
-                    success: function(data) {
-                        jQuery("select[id='subServiceId']").find("option:not(:first)").remove();
-                        jQuery.each(data, function(key, value) {
-                            jQuery("select[id='subServiceId']").append('<option value="' + key +
-                                '">' + value + '</option>');
-                        });
-                    },
-                });
-            }
         });
     </script>
 

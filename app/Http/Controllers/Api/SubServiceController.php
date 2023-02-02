@@ -20,15 +20,16 @@ class SubServiceController extends Controller
      */
     public function index(Request $request)
     {
-        $query = SubService::select(DB::raw('sub_service.*, product.product_image,  product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
+        $query = SubService::select(DB::raw('sub_service.*, product.product_image as image, product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
             ->with('banner')
-            ->leftJoin('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
+            ->join('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
             ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id');
         if ($request->service_list_id) {
             $query->where('sub_service.service_list_id', $request->service_list_id);
         }
         $sub_services = $query->latest('sub_service.created_at')
             ->groupBy('sub_service.sub_service_id')
+            ->where('sub_service.is_active', '1')
             ->paginate(10);
         if ($sub_services) {
             return response()->json([
@@ -96,7 +97,7 @@ class SubServiceController extends Controller
      */
     public function show($id)
     {
-        $service  = SubService::select(DB::raw('sub_service.*, product.product_image,  product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
+        $service  = SubService::select(DB::raw('sub_service.*, product.product_image as image,  product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
             ->with(['banner', 'images'])
             ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id')
             ->leftJoin('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
@@ -104,18 +105,10 @@ class SubServiceController extends Controller
             ->groupBy('sub_service.sub_service_id')
             ->first();
 
-        //     foreach ($service->timeSlots as $key => $slot) {
-        //         $booked = OrderDetail::where('booking_date', $avail->date)
-        //             ->where('booking_start_time', $slot->start_time)
-        //             ->where('booking_end_time', $slot->end_time)
-        //             ->get();
-        //         if (count($booked) > 0) {
-        //             $slot->is_booked = true;
-        //         } else {
-        //             $slot->is_booked = false;
-        //         }
-        //     }
-        // }
+            return response()->json([
+                'success' => 1,
+                'sub_service_list' => $service
+            ], 200);
         if ($service) {
             return response()->json([
                 'success' => 1,
@@ -157,7 +150,7 @@ class SubServiceController extends Controller
 
     public function getSubService()
     {
-        $service = SubService::pluck('sub_service_name', 'sub_service_id')->toArray();
+        $service = SubService::pluck('sub_service_name', 'sub_service_id')->where('is_active', 1)->toArray();
         return response()->json([
             'success' => 1,
             'services' => $service

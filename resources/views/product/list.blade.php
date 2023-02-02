@@ -40,13 +40,13 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Service</th>
-                                <th>Service List</th>
-                                <th>Sub Service </th>
                                 <th>Category </th>
-                                <th>Product Name</th>
-                                <th>Product Image</th>
+                                <th>Name (eng)</th>
+                                <th>Name (ar)</th>
+                                <th>Image</th>
                                 <th>Banner Image</th>
+                                <th>Description</th>
+                                <th>Description Ar</th>
                                 <th>Rate</th>
                                 <th>Discount</th>
                                 <th>Active</th>
@@ -64,11 +64,9 @@
                                 @foreach ($product as $key => $product)
                                     <tr>
                                         <td> {{ $product->product_id }}</td>
-                                        <td> {{ @$product->service->service_name }}</td>
-                                        <td> {{ @$product->serviceList->service_name }}</td>
-                                        <td> {{ @$product->subServiceList->sub_service_name }}</td>
                                         <td> {{ @$product->category->category_name }}</td>
                                         <td> {{ $product->product_name }}</td>
+                                        <td> {{ $product->product_name_ar }}</td>
                                         <td>
                                             @if ($product->product_image)
                                                 <img src="{{ asset('api/product-image/' . $product->product_image) }}"
@@ -78,20 +76,23 @@
                                         <td>
                                             @if (isset($product->banner->image))
                                                 <img src="{{ asset('api/banner-image/' . $product->banner->image) }}"
-                                                    width="50" height="30">
+                                                    width="80" height="60">
                                             @endIf
                                         </td>
-                                        <td> {{ $product->rate }}</td>
+                                        <td>{{ $product->description }}</td>
+                                        <td>{{ $product->description_ar }}</td>
+                                        <td> {{ number_format($product->rate, 2) }} OMR</td>
                                         <td>
                                             @if ($product->offers)
                                                 @if (@$product->offers->first()->end_date >= date('Y-m-d'))
-                                                    {{ @$product->offers->first()->end_time <= date('H:r:s') ? $product->discount : 0 }}
+                                                    {{ @$product->offers->first()->end_time <= date('H:r:s') ? number_format($product->discount, 2) : '0.00' }}
                                                 @else
-                                                    {{ 0 }}
+                                                    {{ '0.00' }}
                                                 @endIf
                                             @else
-                                                {{ 0 }}
+                                                {{ '0.00' }}
                                             @endIf
+                                            OMR
                                         </td>
                                         <td> {!! !empty($product->is_active)
                                             ? '<span class="badge bg-success">Active</span>'
@@ -156,6 +157,7 @@
         }
         $(document).ready(function() {
             $('#product_datatable').DataTable({
+                "scrollX": true,
                 "paging": true,
                 "lengthChange": false,
                 "searching": true,

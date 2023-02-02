@@ -61,7 +61,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('delete/{id}', ['as' => 'category_delete', 'uses' => 'CategoryController@destroy']);
     });
 
-    // Banner Routes
+    // Users Routes
     Route::get('users', 'UserController@index')->name('users.index');
     Route::get('users/create', 'UserController@create')->name('users.create');
     Route::post('users', 'UserController@store')->name('users.store');
