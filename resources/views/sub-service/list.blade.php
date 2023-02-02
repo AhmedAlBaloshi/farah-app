@@ -43,7 +43,6 @@
                                 <th>Service</th>
                                 <th>Sub Service English Name</th>
                                 <th>Sub Service Arabic Name</th>
-                                <th>Image</th>
                                 <th>Start Time</th>
                                 <th>End Time</th>
                                 <th>Difference</th>
@@ -65,12 +64,6 @@
                                         <td> {{ @$service->serviceList->service_name }}</td>
                                         <td> {{ $service->sub_service_name }}</td>
                                         <td> {{ $service->sub_service_name_ar }}</td>
-                                        <td>
-                                            @if (!empty($service->product_image))
-                                                <img src="{{ asset('api/sub-service-image/' . $service->product_image) }}"
-                                                    width="80" height="60">
-                                            @endif
-                                        </td>
                                         <td>{{ $service->start_time }}</td>
                                         <td>{{ $service->end_time }}</td>
                                         <td>{{ $service->minutes }} minutes</td>

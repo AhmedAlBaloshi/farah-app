@@ -23,7 +23,8 @@ class BaseController extends Controller
             ->where('product.is_active', 1)
             ->groupBy('product.product_id')
             ->get();
-        $subServices = SubService::select(DB::raw('sub_service.sub_service_id as id, sub_service.sub_service_name as name,sub_service.sub_service_name_ar as name_ar,product.product_image as image, product.discount, product.rate as price, product.discount,AVG(product_rating.rating) as rating'))
+        $subServices = SubService::select(DB::raw('sub_service.sub_service_id as id, sub_service.sub_service_name as name,sub_service.sub_service_name_ar as name_ar product.discount, product.rate as price, product.discount,AVG(product_rating.rating) as rating'))
+            ->with('images')
             ->leftJoin('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
             ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id')
             ->where('sub_service_name', 'like', '%' . $request->search . '%')

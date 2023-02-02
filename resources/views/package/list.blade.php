@@ -41,7 +41,6 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Image</th>
-                                <th>Product</th>
                                 <th>Title</th>
                                 <th>Amount</th>
                                 <th>Start Date</th>
@@ -61,11 +60,6 @@
                                             <img src="{{ asset('api/package-image/' . $package->image) }}"
                                             alt=""style="width: 60px;height: 60px;">
                                             @endif
-                                        </td>
-                                        <td>
-                                            {{-- <a href="{{ route('product_index', ['product_id' => $package->product_id]) }}">
-                                                {{ $package->product_id > 0 ? '#' . $package->product_id : '' }}
-                                            </a> --}}
                                         </td>
                                         <td> {{ $package->title }}</td>
                                         <td> {{ $package->amount }}</td>
@@ -138,7 +132,7 @@
                 "info": true,
                 "autoWidth": false,
                 columnDefs: [{
-                    targets: 9,
+                    targets: 8,
                     orderable: false
                 }]
             });

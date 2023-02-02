@@ -29,7 +29,7 @@ class SubServiceController extends Controller
      */
     public function index()
     {
-        $subService = SubService::select(DB::raw('sub_service.*, product.product_id,product.product_image,  product.discount,product.address, product.address_ar, product.rate as amount, AVG(product_rating.rating) as rating'))
+        $subService = SubService::select(DB::raw('sub_service.*, product.product_id, product.discount,product.address, product.address_ar, product.rate as amount, AVG(product_rating.rating) as rating'))
             ->with('banner')
             ->join('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
             ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id')->latest('sub_service.created_at')
@@ -58,11 +58,13 @@ class SubServiceController extends Controller
             'sub_service_name'    => 'required',
             'sub_service_name_ar' => 'required',
             'service_list_id'     => 'required',
-            'image' => 'required',
             'address' => 'required',
             'address_ar' => 'required',
             'amount' => 'required|integer',
             'detail'     => 'required',
+            'sub_service_image.*.image' => 'required',
+        ], [
+            'sub_service_image.*.image.required' => 'Image field is required',
         ]);
 
         SubService::add($request->all());
@@ -100,7 +102,7 @@ class SubServiceController extends Controller
             'address_ar' => 'required',
             'amount' => 'required|integer',
             'detail'     => 'required',
-        ]);
+           ]);
 
         SubService::updateRecords($id, $request->all());
 

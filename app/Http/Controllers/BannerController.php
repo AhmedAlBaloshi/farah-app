@@ -31,8 +31,8 @@ class BannerController extends Controller
      */
     public function create()
     {
-        $subService = SubService::pluck('sub_service_name', 'sub_service_id')->where('is_active', 1)->toArray();
-        $product = Product::pluck('product_name', 'product_id')->where('is_active', 1)->where('sub_service_id', null)->toArray();
+        $subService = SubService::select('sub_service_name', 'sub_service_id')->where('is_active', 1)->get();
+        $product = Product::select('product_name', 'product_id')->where('sub_service_id', null)->where('is_active', 1)->get();
         return view('banner.form', compact('subService', 'product'));
     }
 
@@ -77,8 +77,8 @@ class BannerController extends Controller
     public function edit($id)
     {
         $banner = Banner::findOrFail($id);
-        $subService = SubService::pluck('sub_service_name', 'sub_service_id')->where('is_active', 1)->toArray();
-        $product = Product::pluck('product_name', 'product_id')->where('is_active', 1)->where('sub_service_id', null)->toArray();
+        $subService = SubService::select('sub_service_name', 'sub_service_id')->where('is_active', 1)->get();
+        $product = Product::select('product_name', 'product_id')->where('sub_service_id', null)->where('is_active', 1)->get();
         return view('banner.form', compact('banner', 'subService', 'product'));
     }
 

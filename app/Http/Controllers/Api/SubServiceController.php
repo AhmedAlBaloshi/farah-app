@@ -20,8 +20,8 @@ class SubServiceController extends Controller
      */
     public function index(Request $request)
     {
-        $query = SubService::select(DB::raw('sub_service.*, product.product_image as image, product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
-            ->with('banner')
+        $query = SubService::select(DB::raw('sub_service.*, product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
+            ->with('banner', 'images')
             ->join('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
             ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id');
         if ($request->service_list_id) {
@@ -97,7 +97,7 @@ class SubServiceController extends Controller
      */
     public function show($id)
     {
-        $service  = SubService::select(DB::raw('sub_service.*, product.product_image as image,  product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
+        $service  = SubService::select(DB::raw('sub_service.*, product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
             ->with(['banner', 'images'])
             ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id')
             ->leftJoin('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
@@ -105,10 +105,10 @@ class SubServiceController extends Controller
             ->groupBy('sub_service.sub_service_id')
             ->first();
 
-            return response()->json([
-                'success' => 1,
-                'sub_service_list' => $service
-            ], 200);
+        return response()->json([
+            'success' => 1,
+            'sub_service_list' => $service
+        ], 200);
         if ($service) {
             return response()->json([
                 'success' => 1,
@@ -150,7 +150,7 @@ class SubServiceController extends Controller
 
     public function getSubService()
     {
-        $service = SubService::pluck('sub_service_name', 'sub_service_id')->where('is_active', 1)->toArray();
+        $service = SubService::select('sub_service_name', 'sub_service_id')->where('is_active', 1)->get();
         return response()->json([
             'success' => 1,
             'services' => $service

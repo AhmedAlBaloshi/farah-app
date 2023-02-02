@@ -28,7 +28,7 @@ class PackageController extends Controller
      */
     public function create()
     {
-        $products = Product::select('product_name', 'product_id')->get();
+        $products = Product::select('product_name', 'product_id')->where('sub_service_id', null)->where('is_active', 1)->get();
         return view('package.form', compact('products'));
     }
 
@@ -44,6 +44,7 @@ class PackageController extends Controller
             'title'      => 'required|string|min:3',
             'amount'      => 'required',
             'detail'      => 'required',
+            'image'      => 'required',
             'start_date'      => 'required|date',
             'start_time'      => 'required',
             'end_date'      => 'required|date',
@@ -75,11 +76,10 @@ class PackageController extends Controller
      */
     public function edit($id)
     {
-        $products = Product::select('product_name', 'product_id')->get();
-        $package = Package::findOrFail($id);
+        $products = Product::select('product_name', 'product_id')->where('sub_service_id', null)->where('is_active', 1)->get();
+            $package = Package::findOrFail($id);
         $pkgSer = PackageService::select('product_id')->where('package_id', $id)->get();
         $package['items']  = $pkgSer;
-        // echo json_encode($pkgSer);exit;
         return view('package.form', compact('package', 'products'));
     }
 

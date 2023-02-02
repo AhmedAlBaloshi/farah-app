@@ -73,20 +73,6 @@
                                 {!! $errors->first('sub_service_name_ar', '<p class="help-block">:message</p>') !!}
                             </div>
                         </div>
-                        <div class="form-group row {{ $errors->has('image') ? 'has-error' : '' }}">
-                            <label for="exampleInputFile" class="col-sm-3 col-form-label">Image</label>
-                            <div class="input-group col-sm-6">
-                                <div class="custom-file">
-                                    <input type="file" name="image" class="custom-file-input" id="exampleInputFile">
-                                    <label class="custom-file-label" for="exampleInputFile">Choose file</label>
-                                </div>
-                                {!! $errors->first('image', '<p class="help-block">:message</p>') !!}
-                            </div>
-                            @if (!empty($subService->image))
-                                <img src="{{ asset('api/sub-service-image/' . $subService->image) }}" width="80"
-                                    height="50">
-                            @endif
-                        </div>
                         <div class="form-group row {{ $errors->has('detail') ? 'has-error' : '' }}">
                             <label for="detail" class="col-sm-3 col-form-label">Detail</label>
                             <div class="col-sm-6">
@@ -210,8 +196,7 @@
                 callbackBeforeRemoveClick: function(ele, options) {
                     options['min'] = 1;
                 },
-                callbackAfterAdd: function() {
-                },
+                callbackAfterAdd: function() {},
                 callbackAfterRemoveClick: function(ele, options) {}
             });
 

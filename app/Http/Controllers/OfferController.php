@@ -35,8 +35,9 @@ class OfferController extends Controller
      */
     public function create()
     {
-        $services = SubService::pluck('sub_service_name', 'sub_service_id')->toArray();
-        $products = Product::pluck('product_name', 'product_id')->toArray();
+        $services = SubService::select('sub_service_name', 'sub_service_id')->where('is_active', 1)->get();
+        $products = Product::select('product_name', 'product_id')->where('sub_service_id', null)->where('is_active', 1)->get();
+        // dd(count($products));
         return view('offer.form', compact('products', 'services'));
     }
 
@@ -87,8 +88,8 @@ class OfferController extends Controller
      */
     public function edit($id)
     {
-        $services = SubService::pluck('sub_service_name', 'sub_service_id')->toArray();
-        $products = Product::pluck('product_name', 'product_id')->toArray();
+        $services = SubService::select('sub_service_name', 'sub_service_id')->where('is_active', 1)->get();
+        $products = Product::select('product_name', 'product_id')->where('sub_service_id', null)->where('is_active', 1)->get();
         $offer = Offer::findOrFail($id);
         return view('offer.form', compact('offer', 'products', 'services'));
     }

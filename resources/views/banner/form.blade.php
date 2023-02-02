@@ -55,22 +55,27 @@
                         <div class="form-group row {{ $errors->has('sub_service_id') ? 'has-error' : '' }}">
                             <label for="subServiceId" class="col-sm-3 col-form-label">Sub Service</label>
                             <div class="col-sm-6">
-                                {!! Form::select('sub_service_id', $subService, null, [
-                                    'class' => 'form-control',
-                                    'id' => 'subServiceId',
-                                    'placeholder' => '-Select Sub Service-',
-                                ]) !!}
+                                <select name="sub_service_id" id="subService" class="form-control">
+                                    <option value="">-Select Sub Service-</option>
+                                    @foreach ($subService as $ser)
+                                        <option {{ !empty($banner->sub_service_id) && $banner->sub_service_id == $ser->sub_service_id?'selected':'' }} value="{{ $ser->sub_service_id }}">{{ $ser->sub_service_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                               
                                 {!! $errors->first('sub_service_id', '<p class="help-block">:message</p>') !!}
                             </div>
                         </div>
                         <div class="form-group row {{ $errors->has('product_id') ? 'has-error' : '' }}">
                             <label for="productId" class="col-sm-3 col-form-label">Product</label>
                             <div class="col-sm-6">
-                                {!! Form::select('product_id', $product, null, [
-                                    'class' => 'form-control',
-                                    'id' => 'productId',
-                                    'placeholder' => '-Select Product-',
-                                ]) !!}
+                                <select name="product_id" id="product" class="form-control">
+                                    <option value="">-Select Product-</option>
+                                    @foreach ($product as $prod)
+                                        <option  {{ !empty($banner->product_id) && $banner->product_id == $prod->product_id?'selected':'' }} value="{{ $prod->product_id }}">{{ $prod->product_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                                 {!! $errors->first('product_id', '<p class="help-block">:message</p>') !!}
                             </div>
                         </div>
