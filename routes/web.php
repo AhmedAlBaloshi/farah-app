@@ -93,6 +93,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('about-us', 'AboutUsController@index')->name('about.index');
     Route::put('about-us/{id}', 'AboutUsController@update')->name('about.update');
 
+    // Payment Routes
+    Route::get('payments', 'PaymentController@index')->name('payments.index');
+
     // term of services Routes
     Route::get('term-of-services', 'TermServiceController@index')->name('term.index');
     Route::put('term-of-services/{id}', 'TermServiceController@update')->name('term.update');

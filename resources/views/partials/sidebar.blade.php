@@ -88,6 +88,14 @@
                     </ul>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
+                            <a href="{{ route('payments.index') }}" class="nav-link" id="payment-module">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Payment</p>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
                             <a href="{{ route('banners.index') }}" class="nav-link" id="banner-module">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Banner </p>

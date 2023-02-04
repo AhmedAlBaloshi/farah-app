@@ -230,7 +230,7 @@ class OrderController extends Controller
         // update Order payment status
 
         $order = Order::findOrFail($order_id);
-        $order->payment_status = $request->payment_status;
+        $order->payment_status = 'paid';
         $order->update();
         $taxes = $order->taxes ? $request->taxes : 0;
 
@@ -241,9 +241,10 @@ class OrderController extends Controller
         $payment->amount = $request->amount;
         $payment->discount = $discount;
         $payment->taxes = $taxes;
+        $payment->user_id = auth()->user()->id;
         $payment->payment_date = $request->payment_date;
         $payment->net_amount = ($request->amount - $discount - $taxes);
-        $payment->payment_status = $request->payment_status;
+        $payment->payment_status = 'paid';
         $payment->timestamps = false;
         $payment->save();
         if ($payment) {

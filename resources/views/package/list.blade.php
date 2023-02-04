@@ -62,7 +62,7 @@
                                             @endif
                                         </td>
                                         <td> {{ $package->title }}</td>
-                                        <td> {{ $package->amount }}</td>
+                                        <td> {{ number_format($package->amount,2) }} OMR</td>
                                         <td> {{ $package->start_date }}</td>
                                         <td> {{ $package->start_time }}</td>
                                         <td> {{ $package->end_date }}</td>

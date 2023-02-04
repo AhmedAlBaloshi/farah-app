@@ -56,6 +56,12 @@
                         </thead>
                         <tbody>
                             @if (!$orders->isEmpty())
+                            @if (isset($_GET['order_id']))
+                            @php
+                                $orders = $orders->where('id', $_GET['order_id']);
+                            @endphp
+                        @endif
+
                                 @foreach ($orders as $key => $order)
                                     <tr>
                                         <td> {{ $order->id }}</td>
@@ -84,7 +90,7 @@
                                             <span
                                                 class="badge {{ $color }} text-sm">{{ $order->delivery_status }}</span>
                                         </td>
-                                        <td> {{ $order->grand_total }}</td>
+                                        <td> {{ number_format($order->grand_total,2) }} OMR</td>
                                         <td>
                                             @if ($order->delivery_status != 'Delivered' && $order->delivery_status != 'Cancelled')
                                                 <a onClick="updateStatus('{{ route('orders.update-status', $order->id) }}','{{ $order->delivery_status }}')"

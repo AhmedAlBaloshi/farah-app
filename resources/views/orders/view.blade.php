@@ -123,7 +123,7 @@
                                         <td><img src="{{ asset('api/product-image/' . $item->product_image) }}"width="80"
                                                 height="60" alt=""></td>
                                         <td>{{ $item->quantity }}</td>
-                                        <td>{{ $item->unit_price }}</td>
+                                        <td>{{ number_format($item->unit_price,2) }} OMR</td>
                                     </tr>
                                 @endforeach
                             @endif

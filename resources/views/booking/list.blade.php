@@ -58,6 +58,11 @@
                         </thead>
                         <tbody>
                             @if (!$bookings->isEmpty())
+                                @if (isset($_GET['booking_id']))
+                                    @php
+                                        $bookings = $bookings->where('id', $_GET['booking_id']);
+                                    @endphp
+                                @endif
                                 @foreach ($bookings as $key => $booking)
                                     <tr>
                                         <td> {{ $booking->id }}</td>
