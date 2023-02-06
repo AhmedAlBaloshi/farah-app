@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use DateInterval;
+use DatePeriod;
 use DateTime;
 use Illuminate\Database\Eloquent\Model;
 
@@ -60,24 +63,23 @@ class ProductTimeSlot extends Model
         }
     }
 
-    public static function getTimeSlot($interval, $start_time, $end_time)
+    public static function getTimeSlot($int, $start_time, $end_time)
     {
-        $start = new DateTime($start_time);
-        $end = new DateTime($end_time);
-        $startTime = $start->format('H:i');
-        $endTime = $end->format('H:i');
-        $i = 0;
-        $time = [];
-        while (strtotime($startTime) <= strtotime($endTime)) {
-            $start = $startTime;
-            $end = date('H:i', strtotime('+' . $interval . ' minutes', strtotime($startTime)));
-            $startTime = date('H:i', strtotime('+' . $interval . ' minutes', strtotime($startTime)));
-            $i++;
-            if (strtotime($startTime) <= strtotime($endTime)) {
-                $time[$i]['start_time'] = $start;
-                $time[$i]['end_time'] = $end;
-            }
+        $start = Carbon::create($start_time);
+        $end = Carbon::create($end_time != "00:00:00" ? $end_time : '24:00:00');
+
+        $interval = DateInterval::createFromDateString($int . ' minutes');
+        $period = new DatePeriod($start, $interval, $end);
+
+        $timeslots = [];
+        foreach ($period as $key => $dt) {
+            $start_time = $dt->format("H:i");
+            $end_time = $dt->addMinutes($int)->format("H:i");
+            $timeslots[] = [
+                'start_time' => $start_time,
+                'end_time' => $end_time
+            ];
         }
-        return $time;
+        return $timeslots;
     }
 }

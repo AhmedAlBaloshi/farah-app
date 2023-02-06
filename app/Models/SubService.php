@@ -91,7 +91,7 @@ class SubService extends Model
             ];
             ProductTimeSlot::add($params['time_slot']);
             if (!empty($params['sub_service_image'])) {
-                
+
                 $subServiceImageParams = [];
                 foreach ($params['sub_service_image'] as $key => $item) {
                     $subServiceImageParams[] = [
@@ -129,33 +129,15 @@ class SubService extends Model
                 $product->rate = $params['amount'];
                 $product->update();
 
-                // // add records in product availability
-                // if (!empty($params['available'])) {
-                //     $availabilityParams = [];
-                //     foreach ($params['available'] as $key => $item) {
-                //         $availabilityParams[] = [
-                //             'date'       => $item['date'],
-                //             'time'       => $item['time'],
-                //             'is_active'  => !empty($item['is_active']) ? 1 : 0,
-                //             'start_time' =>  $item['start_time'],
-                //             'end_time' =>  $item['end_time']
-                //         ];
-                //     }
-
-                //     ProductAvailability::updateRecords($availabilityParams, $sub_service->sub_service_id);
-                // }
                 // add records in time slot
-
-                if (!empty($params['time_slot'])) {
-                    $params['time_slot'] = [
-                        'minutes' => $params['minutes'],
-                        'sub_service_id' => $sub_service->sub_service_id,
-                        'start_time' => $params['start_time'],
-                        'end_time' => $params['end_time']
-                    ];
-                    // dd($params['time_slot']);
-                    ProductTimeSlot::updateRecords($params['time_slot'], $sub_service->sub_service_id);
-                }
+                $params['time_slot'] = [
+                    'minutes' => $params['minutes'],
+                    'sub_service_id' => $sub_service->sub_service_id,
+                    'start_time' => $params['start_time'],
+                    'end_time' => $params['end_time']
+                ];
+                // dd($params['time_slot']);
+                ProductTimeSlot::updateRecords($params['time_slot'], $sub_service->sub_service_id);
 
                 if (!empty($params['sub_service_image'])) {
                     ProductImage::updateRecords($params['sub_service_image'], $sub_service->sub_service_id);

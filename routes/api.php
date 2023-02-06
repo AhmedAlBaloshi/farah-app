@@ -57,7 +57,6 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     // ORDER API
     Route::resource('orders', 'Api\OrderController');
-    Route::get('bookings', 'Api\OrderController@bookings');
     Route::post('orders/{id}/payment', 'Api\OrderController@payment');
 
     //USERS

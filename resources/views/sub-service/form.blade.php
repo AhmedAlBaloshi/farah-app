@@ -208,9 +208,6 @@
                 $("input[data-bootstrap-switch]").each(function() {
                     $(this).bootstrapSwitch('state', $(this).prop('checked'));
                 });
-                $("#start-time").change(function() {
-                    $('#end-time').attr('min', $(this).val())
-                });
             });
         </script>
 

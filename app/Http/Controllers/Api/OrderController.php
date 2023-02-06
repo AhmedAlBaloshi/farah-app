@@ -21,52 +21,31 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Order::select('orders.*')->latest()
-            ->join('order_product', 'order_product.order_id', '=', 'orders.id');
+        $orders = Order::select('orders.*')->latest()
+            ->join('order_product', 'order_product.order_id', '=', 'orders.id')
+            ->where('user_id', auth()->user()->id)
+            ->orWhere('guest_id', auth()->user()->id)
+            ->groupBy('orders.id')
+            ->get();
+        $bookings = Order::select('orders.*')->latest()
+            ->join('order_book_time_slot', 'order_book_time_slot.order_id', '=', 'orders.id')
+            ->where('user_id', auth()->user()->id)
+            ->orWhere('guest_id', auth()->user()->id)
+            ->groupBy('orders.id')
+            ->get();
 
-        if ($request->user_id)
-            $query->where('user_id', $request->user_id);
-        if ($request->customer_id)
-            $query->where('guest_id', $request->customer_id);
-
-        $orders = $query->where('user_id', auth()->user()->id)->orWhere('guest_id', auth()->user()->id)->groupBy('orders.id')->get();
-
-        if ($orders) {
+        if ($orders || $bookings) {
             return response()->json([
                 'success' => 1,
-                'orders' => $orders
+                'orders' => $orders->merge($bookings),
+                // 'bookings' => $bookings
             ], 200);
         }
         return response()->json([
             'success' => 0,
-            'message' => 'Failed to load orders from database'
+            'message' => 'Failed to load orders and bookings from database'
         ], 404);
     }
-
-    public function bookings(Request $request)
-    {
-        $query = Order::select('orders.*')->latest()
-            ->join('order_book_time_slot', 'order_book_time_slot.order_id', '=', 'orders.id');
-
-        if ($request->user_id)
-            $query->where('user_id', $request->user_id);
-        if ($request->customer_id)
-            $query->where('guest_id', $request->customer_id);
-
-        $orders = $query->groupBy('orders.id')->get();
-
-        if ($orders) {
-            return response()->json([
-                'success' => 1,
-                'bookings' => $orders
-            ], 200);
-        }
-        return response()->json([
-            'success' => 0,
-            'message' => 'Failed to load bookings from database'
-        ], 404);
-    }
-
 
     /**
      * Show the form for creating a new resource.
