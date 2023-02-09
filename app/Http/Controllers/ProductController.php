@@ -61,7 +61,7 @@ class ProductController extends Controller
             'description'       => 'required',
             'image'       => 'required',
             'description_ar'    => 'required',
-            'rate'              => 'required|integer',
+            'rate'              => 'required|numeric',
             // 'service_id'        => 'required',
             // 'service_list_id'   => 'required',
             // 'sub_service_id'   => 'unique:product',
@@ -101,7 +101,7 @@ class ProductController extends Controller
             'category_id'   => 'required',
             'description'       => 'required',
             'description_ar'    => 'required',
-            'rate'              => 'required|integer',
+            'rate'              => 'required|numeric',
         ]);
 
         Product::updateRecords($id, $request->all());

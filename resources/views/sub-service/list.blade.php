@@ -47,6 +47,7 @@
                                 <th>End Time</th>
                                 <th>Difference</th>
                                 <th>Amount</th>
+                                <th>Offer Discount</th>
                                 <th>Active</th>
                                 <th>Action</th>
                             </tr>
@@ -64,10 +65,27 @@
                                         <td> {{ @$service->serviceList->service_name }}</td>
                                         <td> {{ $service->sub_service_name }}</td>
                                         <td> {{ $service->sub_service_name_ar }}</td>
-                                        <td>{{ $service->start_time }}</td>
-                                        <td>{{ $service->end_time }}</td>
+                                        <td>{{ date('g:i A', strtotime($service->start_time)) }}</td>
+                                        <td>{{ date('g:i A', strtotime($service->end_time)) }}</td>
                                         <td>{{ $service->minutes }} minutes</td>
                                         <td>{{ number_format($service->amount, 2) }} OMR</td>
+                                        <td>
+                                            @if ($service->offers)
+                                                @php
+                                                    $offer = $service->offers->where('end_date', '>=', date('Y-m-d'))->first();
+                                                @endphp
+                                                @if ($offer && $offer->end_date > date('Y-m-d'))
+                                                    {{ number_format($service->discount, 2) }}
+                                                @elseif($offer && $offer->end_time >= date('H:r:s'))
+                                                    {{ number_format($service->discount, 2) }}
+                                                @else
+                                                    {{ '0.00' }}
+                                                @endIf
+                                            @else
+                                                {{ '0.00' }}
+                                            @endIf
+                                            OMR
+                                        </td>
                                         <td> {!! !empty($service->is_active)
                                             ? '<span class="badge bg-success">Active</span>'
                                             : '<span class="badge bg-danger">In-active</span>' !!}

@@ -52,27 +52,50 @@
                                 <img src="{{ asset('api/banner-image/' . $banner->image) }}" width="50" height="30">
                             @endif
                         </div>
-                        <div class="form-group row {{ $errors->has('sub_service_id') ? 'has-error' : '' }}">
-                            <label for="subServiceId" class="col-sm-3 col-form-label">Sub Service</label>
+                        <div class="form-group row">
+                            <div class="col-sm-3"></div>
+                            <div class="col-sm-6 row">
+
+                                <div class="col-3">
+                                    <input name="check" value="is_product" {{ !empty($banner) && $banner->product_id != null ? 'checked':'' }} type="radio" id="for-product">
+                                    <label class="col-form-label" for="for-product">
+                                        Product
+                                    </label>
+                                </div>
+                                <div class="col-3">
+                                    <input name="check" value="is_service" {{ !empty($banner) && $banner->sub_service_id != null ? 'checked':'' }} type="radio" id="for-sub-service">
+                                    <label class="col-form-label" for="for-sub-service">
+                                        Sub Service
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row {{ $errors->has('sub_service_id') ? 'has-error' : '' }}"
+                            id="sub-service-drop">
+                            <label for="subService" class="col-sm-3 col-form-label">Sub Service</label>
                             <div class="col-sm-6">
                                 <select name="sub_service_id" id="subService" class="form-control">
                                     <option value="">-Select Sub Service-</option>
                                     @foreach ($subService as $ser)
-                                        <option {{ !empty($banner->sub_service_id) && $banner->sub_service_id == $ser->sub_service_id?'selected':'' }} value="{{ $ser->sub_service_id }}">{{ $ser->sub_service_name }}
+                                        <option
+                                            {{ !empty($banner->sub_service_id) && $banner->sub_service_id == $ser->sub_service_id ? 'selected' : '' }}
+                                            value="{{ $ser->sub_service_id }}">{{ $ser->sub_service_name }}
                                         </option>
                                     @endforeach
                                 </select>
-                               
                                 {!! $errors->first('sub_service_id', '<p class="help-block">:message</p>') !!}
                             </div>
                         </div>
-                        <div class="form-group row {{ $errors->has('product_id') ? 'has-error' : '' }}">
+                        <div class="form-group row {{ $errors->has('product_id') ? 'has-error' : '' }}" id="product-drop">
                             <label for="productId" class="col-sm-3 col-form-label">Product</label>
                             <div class="col-sm-6">
                                 <select name="product_id" id="product" class="form-control">
                                     <option value="">-Select Product-</option>
                                     @foreach ($product as $prod)
-                                        <option  {{ !empty($banner->product_id) && $banner->product_id == $prod->product_id?'selected':'' }} value="{{ $prod->product_id }}">{{ $prod->product_name }}
+                                        <option
+                                            {{ !empty($banner->product_id) && $banner->product_id == $prod->product_id ? 'selected' : '' }}
+                                            value="{{ $prod->product_id }}">{{ $prod->product_name }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -98,6 +121,28 @@
             $("#module").removeClass("menu-close");
             $("#module").addClass("menu-open");
             $("#banner-module").addClass("active");
+
+            if ($('#for-product').is(':checked')) {
+                $('#product-drop').css('display', '');
+                $('#sub-service-drop').css('display', 'none');
+            } else if($('#for-sub-service').is(':checked')) {
+                $('#product-drop').css('display', 'none');
+                $('#sub-service-drop').css('display', '');
+            }
+            else{
+                $('#for-product').attr('checked',true)
+                $('#product-drop').css('display', '');
+                $('#sub-service-drop').css('display', 'none');
+            }
+
+            $('#for-product').change(function() {
+                $('#product-drop').css('display', '');
+                $('#sub-service-drop').css('display', 'none');
+            });
+            $('#for-sub-service').change(function() {
+                $('#product-drop').css('display', 'none');
+                $('#sub-service-drop').css('display', '');
+            });
         });
     </script>
 @endsection

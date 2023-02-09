@@ -54,6 +54,11 @@ class SubService extends Model
         return $this->hasMany("App\Models\ProductRating", "sub_service_id", "sub_service_id");
     }
 
+    public function offers()
+    {
+        return $this->hasMany(Offer::class,'service_id','sub_service_id');
+    }
+
     public function product()
     {
         return $this->hasOne("App\Models\Product", "sub_service_id");

@@ -66,9 +66,9 @@
                                         <td> {{ $offer->title }}</td>
                                         <td> {{ $offer->percentage }}%</td>
                                         <td> {{ $offer->start_date }}</td>
-                                        <td> {{ $offer->start_time }}</td>
+                                        <td> {{ date('g:i A', strtotime($offer->start_time)) }}</td>
                                         <td> {{ $offer->end_date }}</td>
-                                        <td> {{ $offer->end_time }}</td>
+                                        <td> {{ date('g:i A', strtotime($offer->end_time)) }}</td>
                                         <td>
                                             <a href="{{ route('offers.edit', $offer->id) }}" data-toggle="tooltip"
                                                 data-original-title="Edit" class="edit btn btn-success btn-xs">

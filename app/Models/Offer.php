@@ -45,6 +45,7 @@ class Offer extends Model
                     $product->update();
                 }
             }
+            $params['check'] == 'is_product' ? $params['service_id'] = null : $params['product_id'] = null;
             return self::create($params);
         }
     }
@@ -54,6 +55,7 @@ class Offer extends Model
         if (!empty($params) && (int)$id > 0) {
             $offer = Offer::where('id', $id)->first();
             if ($offer) {
+                $params['check'] == 'is_product' ? $params['service_id'] = null : $params['product_id'] = null;
                 $offer->update($params);
                 if ($params['product_id']) {
                     $product = Product::findOrFail($params['product_id']);

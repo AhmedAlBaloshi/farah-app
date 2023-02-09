@@ -84,8 +84,13 @@
                                         <td> {{ number_format($product->rate, 2) }} OMR</td>
                                         <td>
                                             @if ($product->offers)
-                                                @if (@$product->offers->first()->end_date >= date('Y-m-d'))
-                                                    {{ @$product->offers->first()->end_time <= date('H:r:s') ? number_format($product->discount, 2) : '0.00' }}
+                                                @php
+                                                    $offer = $product->offers->where('end_date', '>=', date('Y-m-d'))->first();
+                                                @endphp
+                                                @if ($offer && $offer->end_date > date('Y-m-d'))
+                                                    {{ number_format($product->discount, 2) }}
+                                                @elseif($offer && $offer->end_time >= date('H:r'))
+                                                    {{ number_format($product->discount, 2) }}
                                                 @else
                                                     {{ '0.00' }}
                                                 @endIf

@@ -60,7 +60,7 @@ class SubServiceController extends Controller
             'service_list_id'     => 'required',
             'address' => 'required',
             'address_ar' => 'required',
-            'amount' => 'required|integer',
+            'amount' => 'required|numeric',
             'detail'     => 'required',
             'sub_service_image.*.image' => 'required',
         ], [
@@ -100,7 +100,7 @@ class SubServiceController extends Controller
             'service_list_id'     => 'required',
             'address' => 'required',
             'address_ar' => 'required',
-            'amount' => 'required|integer',
+            'amount' => 'required|numeric',
             'detail'     => 'required',
            ]);
 

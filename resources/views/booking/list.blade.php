@@ -69,8 +69,8 @@
                                         <td> {{ @$booking->user->firstname ? @$booking->user->firstname : @$booking->guest->firstname }}
                                         </td>
                                         <td>{{ $booking->booking_date }}</td>
-                                        <td>{{ $booking->booking_start_time }}</td>
-                                        <td>{{ $booking->booking_end_time }}</td>
+                                        <td>{{ date('g:i A', strtotime($booking->booking_start_time)) }}</td>
+                                        <td>{{ date('g:i A', strtotime($booking->booking_end_time)) }}</td>
                                         <td> {{ $booking->payment_type }}</td>
                                         <td>
                                             <span

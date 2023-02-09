@@ -64,9 +64,9 @@
                                         <td> {{ $package->title }}</td>
                                         <td> {{ number_format($package->amount,2) }} OMR</td>
                                         <td> {{ $package->start_date }}</td>
-                                        <td> {{ $package->start_time }}</td>
+                                        <td> {{ date('g:i A', strtotime($package->start_time)) }}</td>
                                         <td> {{ $package->end_date }}</td>
-                                        <td> {{ $package->end_time }}</td>
+                                        <td> {{ date('g:i A', strtotime($package->end_time)) }}</td>
                                         <td>
                                             <a href="{{ route('packages.edit', $package->id) }}" data-toggle="tooltip"
                                                 data-original-title="Edit" class="edit btn btn-success btn-xs">

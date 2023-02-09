@@ -18,7 +18,8 @@ class BannerController extends Controller
     public function index()
     {
         $banners = Banner::with(['product', 'subService' => function ($q) {
-            return $q->select(DB::raw('sub_service.*, product.product_image,  product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
+            return $q->select(DB::raw('sub_service.*, product_image.image as product_image,  product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
+            ->leftJoin('product_image', 'product_image.sub_service_id', '=', 'product_image.sub_service_id')
                 ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id')
                 ->leftJoin('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
                 ->groupBy('sub_service.sub_service_id');
@@ -95,7 +96,8 @@ class BannerController extends Controller
     public function show($id)
     {
         $banner  = Banner::with(['product', 'subService' => function ($q) {
-            return $q->select(DB::raw('sub_service.*, product.product_image,  product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
+            return $q->select(DB::raw('sub_service.*, product_image.image as product_image,  product.discount,product.address, product.address_ar, product.rate, AVG(product_rating.rating) as rating'))
+            ->leftJoin('product_image', 'product_image.sub_service_id', '=', 'product_image.sub_service_id')
                 ->leftJoin('product_rating', 'product_rating.sub_service_id', '=', 'sub_service.sub_service_id')
                 ->leftJoin('product', 'product.sub_service_id', '=', 'sub_service.sub_service_id')
                 ->groupBy('sub_service.sub_service_id');

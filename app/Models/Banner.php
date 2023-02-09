@@ -37,6 +37,7 @@ class Banner extends Model
                 $image = $fileName;
             }
             $params['image'] = $image;
+            $params['check'] == 'is_product' ? $params['sub_service_id'] = null : $params['product_id'] = null;
             return self::create($params);
         }
     }
@@ -56,6 +57,8 @@ class Banner extends Model
                 $image = $fileName;
             }
             $params['image'] = $image;
+            $params['check'] == 'is_product' ? $params['sub_service_id'] = null : $params['product_id'] = null;
+
             $banner = Banner::findOrFail($id);
             if ($banner) {
                 $banner->update($params);

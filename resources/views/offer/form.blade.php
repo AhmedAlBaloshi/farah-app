@@ -49,7 +49,25 @@
                                 {!! $errors->first('title', '<p class="help-block">:message</p>') !!}
                             </div>
                         </div>
-                        <div class="form-group row {{ $errors->has('service_id') ? 'has-error' : '' }}">
+                        <div class="form-group row">
+                            <div class="col-sm-3"></div>
+                            <div class="col-sm-6 row">
+
+                                <div class="col-3">
+                                    <input name="check" value="is_product" {{ !empty($offer) && $offer->product_id != null ? 'checked':'' }} type="radio" id="for-product">
+                                    <label class="col-form-label" for="for-product">
+                                        Product
+                                    </label>
+                                </div>
+                                <div class="col-3">
+                                    <input name="check" value="is_service" {{ !empty($offer) && $offer->service_id != null ? 'checked':'' }} type="radio" id="for-sub-service">
+                                    <label class="col-form-label" for="for-sub-service">
+                                        Sub Service
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="service-drop" class="form-group row {{ $errors->has('service_id') ? 'has-error' : '' }}">
                             <label for="subService" class="col-sm-3 col-form-label">Sub Service</label>
                             <div class="col-sm-6">
                                 <select name="service_id" id="subService" class="form-control">
@@ -62,7 +80,7 @@
                                 {!! $errors->first('service_id', '<p class="help-block">:message</p>') !!}
                             </div>
                         </div>
-                        <div class="form-group row {{ $errors->has('product_id') ? 'has-error' : '' }}">
+                        <div id="product-drop" class="form-group row {{ $errors->has('product_id') ? 'has-error' : '' }}">
                             <label for="product" class="col-sm-3 col-form-label">Product</label>
                             <div class="col-sm-6">
                                 <select name="product_id" id="product" class="form-control">
@@ -150,6 +168,28 @@
             $("#start_date").change(function() {
                 $('#end_date').attr('min', $(this).val())
             });
+            
+            if ($('#for-product').is(':checked')) {
+                $('#product-drop').css('display', '');
+                $('#service-drop').css('display', 'none');
+            } else if($('#for-sub-service').is(':checked')) {
+                $('#product-drop').css('display', 'none');
+                $('#service-drop').css('display', '');
+            }
+            else{
+                $('#for-product').attr('checked',true)
+                $('#product-drop').css('display', '');
+                $('#service-drop').css('display', 'none');
+            }
+
+            $('#for-product').change(function() {
+                $('#product-drop').css('display', '');
+                $('#service-drop').css('display', 'none');
+            });
+            $('#for-sub-service').change(function() {
+                $('#product-drop').css('display', 'none');
+                $('#service-drop').css('display', '');
+              });
         });
     </script>
 @endsection
