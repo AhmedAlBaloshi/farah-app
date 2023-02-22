@@ -42,7 +42,7 @@
                                 <th>ID</th>
                                 <th>Image</th>
                                 <th>Title</th>
-                                <th>Amount</th>
+                                <th>Discounted Amount</th>
                                 <th>Start Date</th>
                                 <th>Start Time</th>
                                 <th>End Date</th>
